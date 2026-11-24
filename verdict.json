@@ -1,0 +1,100 @@
+{
+  "run_id": "2026-11-24T14:06:54+01:00_60a51806",
+  "samenvatting": "De Desync begint met de hulpslag op eigen pols die op dag 10 om 02:40 werd geactiveerd, twee uur na de goedkeuring van het net 'op eigen maat' op dag 8. Vanaf dag 10 volgt een vaste cyclus van zware nachten elke vierde dag, tussen 04:15 en 04:50. Het verband is aannemelijk maar niet volledig bewezen, en de goedkeuring en activering zijn niet door één persoon vastgelegd.",
+  "oorzaak": {
+    "ingreep": {
+      "bewering": "De hulpslag op eigen pols, geactiveerd op dag 10 om 02:40, is de best onderbouwde verandering vóór de Desync. Die hulpslag past bij de eigen-maat-goedkeuring van de Archmage op dag 8, maar wie de slag activeerde, is niet vastgelegd.",
+      "bewijs": [
+        "ENG-011",
+        "ENG-012",
+        "ARC-106"
+      ],
+      "zekerheid": 0.6
+    },
+    "mechanisme": {
+      "bewering": "Een tweede pols naast de Kroonklok brengt het net en de magie uit de maat, en records op die pols zijn alleen daar terug te lezen en gaan verloren als die wegvalt. Daardoor ontstaan de tijdsverschuivingen en aantastingen van de Burchtader en de schilden. Dit is een verklaring van de bouwakte, niet direct gemeten op de hulpslag.",
+      "bewijs": [
+        "HIS-109",
+        "HIS-110",
+        "ENG-011"
+      ],
+      "zekerheid": 0.5
+    },
+    "verloop": {
+      "bewering": "Na de activering op dag 10 om 02:40 steeg de doorvoer met 38% om 03:00, waarna op dag 10 om 04:40 de wolven en om 04:50 de herten onrustig werden. Daarna keerde het patroon elke vierde dag terug (dag 14, 18, 22, 26, 30, 34, 38, 42) tussen 04:15 en 04:50, met de lijnen laag en de schilden open op dag 10 en 22. Nachten daartussen waren rustig.",
+      "bewijs": [
+        "ENG-012",
+        "BEA-019",
+        "BEA-020",
+        "BEA-028",
+        "BEA-046",
+        "BEA-113",
+        "ARC-015",
+        "ARC-071",
+        "GUA-019",
+        "GUA-043",
+        "ORA-110",
+        "ORA-142"
+      ],
+      "zekerheid": 0.8
+    }
+  },
+  "acties": [
+    {
+      "actie": "Historian maakt eerst een afschrift van het volledige register, vóór enige andere ingreep.",
+      "reden": "Bij herstel gaat een record op een andere pol verloren als die pol wegvalt; het afschrift is de eerste stap in de herstelvolgorde.",
+      "bewijs": [
+        "HIS-110"
+      ]
+    },
+    {
+      "actie": "Engineer brengt de hulpslag langzaam en in stappen van 0,1% samen met de Kroonklok, pas nadat het afschrift klaar is.",
+      "reden": "De bouwakte schrijft het langzaam samenbrengen van de polsen voor; de fijnregeling in stappen van 0,1% is de beschikbare bedieningswijze.",
+      "bewijs": [
+        "HIS-110",
+        "ENG-061"
+      ]
+    },
+    {
+      "actie": "Archmage legt de eigen-maat-goedkeuring van dag 8 volledig vast in het register, met datum en de reikwijdte.",
+      "reden": "De goedkeuring was tot nu toe verborgen voor de raad, en de raad moet de koppeling met de hulpslag kunnen toetsen.",
+      "bewijs": [
+        "ARC-106"
+      ]
+    },
+    {
+      "actie": "Beast Master en Oracle noteren de onrust in de nacht van dag 46 tussen 04:15 en 04:50, om de voorspelling te toetsen.",
+      "reden": "De cyclus van vier dagen is de enige meetbare test van het verband met de hulpslag.",
+      "bewijs": [
+        "BEA-113",
+        "ORA-142"
+      ]
+    }
+  ],
+  "risicos": [
+    {
+      "risico": "Als de hulpslag zonder afschrift wordt losgekoppeld, kunnen records op die pol verloren gaan.",
+      "mitigatie": "Eerst een afschrift maken en daarna pas de polsen samenbrengen."
+    },
+    {
+      "risico": "Een te snel samenbrengen zet de Kroonklok uit de maat en kan het net verder aantasten.",
+      "mitigatie": "Stapsgewijs samenbrengen in stappen van 0,1%, met controle na elke stap."
+    },
+    {
+      "risico": "De goedkeuring is tot nu toe niet in het register opgenomen, wat het vertrouwen in de besluiten ondermijnt.",
+      "mitigatie": "De goedkeuring van dag 8 alsnog volledig in het register vastleggen."
+    },
+    {
+      "risico": "Als niets verandert, herhaalt de onrust zich elke vierde nacht met schilden die van binnenuit opengaan.",
+      "mitigatie": "De hulpslag-koppeling volgens de herstelvolgorde uitvoeren en de nacht van dag 46 bewaken."
+    }
+  ],
+  "voorspelling": {
+    "dag": 46,
+    "bewering": "Als niemand ingrijpt, slaat de Desync opnieuw toe op dag 46 tussen 04:15 en 04:50, met onrust van 4 à 5. Dat is extrapolatie uit de vaste cyclus van vier dagen vanaf dag 10 (42 + 4).",
+    "bewijs": [
+      "BEA-113",
+      "ORA-142"
+    ]
+  }
+}

@@ -1,6 +1,6 @@
 {
-  "run_id": "2026-11-24T11:35:35+01:00_345622d4",
-  "status": "bezig",
+  "run_id": "2026-11-24T14:06:54+01:00_60a51806",
+  "status": "klaar",
   "raadsleden": [
     "archmage",
     "beast_master",
@@ -16,25 +16,408 @@
       "spreker": "koning",
       "soort": "routering",
       "aan": "historian",
-      "vraag": "Historicus, welke afwijkingen staan er in het archief, beginnend bij de vroegste met dag en tijd; wat veranderde er vlak daarvoor, door wie en met welk doel; wat heb je zelf veranderd in de loop der tijd; en wat is volgens de bron de normale werking van de tijdstroom in Achrona?",
-      "reden": "Ik begin bij de Historicus om de historische context en eventuele eerdere incidenten vast te stellen, conform de suggestie om de tijdlijn van verleden naar toekomst te volgen.",
+      "vraag": "Welke eerdere gevallen van de Desync staan in het archief? Noem de vroegste afwijking eerst, met dag en tijd, en beschrijf het patroon dat je ziet over de tijd heen. Wat veranderde er vlak voordat elk geval begon, en door wie? Wat deed je zelf bij die gebeurtenissen? En welke regels, normen of voorwaarden in het archief beschrijven wanneer zo'n afwijking ontstaat?",
+      "reden": "Het debat is nog niet begonnen, en de historian moet als eerste spreken. We hebben eerst het verleden nodig: wanneer de Desync eerder optrad, wat eraan voorafging en welke regels het archief noemt.",
       "open_vragen": [
-        "Welke ingreep (wie, wat, wanneer) veroorzaakte de Desync?",
-        "Wat is het mechanisme waardoor deze ingreep tot de huidige symptomen leidt?",
-        "Wat is het exacte tijdsverloop en patroon van de Desync?",
-        "Wat is het geordende herstelplan en welke risico's zijn daarbij verbonden?",
-        "Op welke dag zal de Desync opnieuw toeslaan?"
+        "Wanneer en hoe vaak trad de Desync eerder op, en welk patroon zit erin?",
+        "Wat veranderde er vlak voor elk eerder geval, en door wie?",
+        "Welke regel, norm of voorwaarde verklaart volgens het archief het ontstaan van de Desync?",
+        "Wat is de werkelijke ingreep en het mechanisme achter de symptomen?",
+        "Hoe zou een veilig herstel eruitzien, en welke gevaren zijn er?",
+        "Wanneer slaat de Desync volgens het patroon opnieuw toe?"
+      ]
+    },
+    {
+      "nr": 2,
+      "ronde": 1,
+      "spreker": "historian",
+      "soort": "toolcall",
+      "tool": "lees_kennisbron",
+      "argumenten": {},
+      "pad": "https://mcp.findingsolutions.be/historian/mcp"
+    },
+    {
+      "nr": 3,
+      "ronde": 1,
+      "spreker": "historian",
+      "soort": "bericht",
+      "tekst": "**Vroegste gevallen in het archief**\n\nDe vroegste afwijking is de Stille Winter, 212 jaar voor dag 1 (HIS-003). Die begon in één nacht en eindigde na 40 dagen zonder onderbreking (HIS-004). Daarna volgen twee gevallen in de kroniek.\n\n- **Dag 10, 04:45:** de Burchtader stokte, gemeld door de nachtwake (HIS-035). HIS-036 is de klacht uit de benedenstad dat berichten half aankwamen, gebeurd op dag 10 04:50 maar vastgelegd op dag 9 23:55.\n- **Dag 22, 04:15:** een lek bij poort oost, gemeld door de wachters (HIS-053). Vastgelegd op dag 22 01:50, dus ook vóór het gebeuren. Daarna ochtendgebed bij de Burchtader op dag 22 05:00 (HIS-054).\n\nHet patroon: beide kroniekgevallen vallen rond 04:00 à 05:00 en raken de magie en de data. Bij beide staat de vastlegging niet gelijk aan het gebeuren, wat HIS-103 uitsluit.\n\n**Wat er vlak ervoor veranderde.** Mijn records noemen geen daders. Vóór dag 10: de nieuwe bron op de markt gewijd (HIS-027, dag 7 13:10). Vóór dag 22: de kaarsen bij de Burchtader vervangen (HIS-049, dag 19 10:25) en de zoekindex bijgewerkt (HIS-051, dag 20 10:10). Of die veranderingen oorzaak zijn, vermoed ik alleen.\n\n**Mijn eigen rol.** Ik schreef de tijdstempelfouten (HIS-112, HIS-116) toe aan klerken zonder bewijs. Ik zei ook dat de Stille Winter terugkomt (HIS-114); dat is een vermoeden, geen record. Ik heb ook geen verklaring voor de vastleggingen vóór het gebeuren.\n\n**Regels.** Elk record wordt op de tik van de Kroonklok geschreven, zodat vastgelegd_op gelijk is aan gebeurd_op (HIS-103). De bouwakte zegt dat een record op een andere pols alleen op die pol terugleesbaar is en verloren gaat als die wegvalt. Bij herstel maakt men eerst een afschrift en brengt men de polsen langzaam samen (HIS-109, HIS-110).\n\nVoor de leylijnen verwijs ik naar de Archmage (HIS-117)."
+    },
+    {
+      "nr": 4,
+      "ronde": 1,
+      "spreker": "koning",
+      "soort": "routering",
+      "aan": "archmage",
+      "vraag": "De Historian zegt dat de twee kroniekgevallen vielen rond 04:00 tot 05:00 (dag 10 04:45 en dag 22 04:15) en dat de Burchtader daarbij stokte. Verwijst naar u voor de leylijnen (HIS-117). Zag u in de leylijnen rond die tijden een afwijking, en wat was de eerste? Wat veranderde er vlak daarvoor, zoals de nieuwe bron op de markt (dag 7), de kaarsen bij de Burchtader (dag 19) of de zoekindex (dag 20), en wie deed dat? Wat deed u zelf toen? En welke regel of voorwaarde in uw bronnen verklaart wanneer de magie van Achrona zo'n aantasting krijgt?",
+      "reden": "De Historian verwees naar de Archmage voor de leylijnen en noemde de vroegste afwijkingen en mogelijke veranderingen, maar kon de oorzaak niet vastleggen. De Archmage kan bevestigen of het magische mechanisme bij die tijden en veranderingen past, en welke regel het ontstaan verklaart.",
+      "open_vragen": [
+        "Welke afwijking in de leylijnen valt samen met dag 10 04:45 en dag 22 04:15, en is die eerder of later dan het gebeuren in de data?",
+        "Wat veranderde er vlak voor elk geval, en door wie: de nieuwe bron (dag 7), de kaarsen (dag 19) of de zoekindex (dag 20)?",
+        "Welke regel, norm of voorwaarde verklaart het ontstaan van de Desync: de Kroonklok, de polsen of de magie van de leylijnen?",
+        "Is de vertraging tussen vastlegging en gebeuren een klokprobleem in het datanet, en is het mechanisme daar een gevolg van?",
+        "Wanneer en hoe vaak trad de Desync eerder op, en klopt het patroon van 04:00 tot 05:00 ook bij de Stille Winter?",
+        "Hoe zou een veilig herstel eruitzien, en welke gevaren zijn er bij het samenbrengen van de polsen?",
+        "Wanneer slaat de Desync volgens het patroon opnieuw toe?"
+      ]
+    },
+    {
+      "nr": 5,
+      "ronde": 1,
+      "spreker": "archmage",
+      "soort": "toolcall",
+      "tool": "lees_kennisbron",
+      "argumenten": {},
+      "pad": "https://mcp.findingsolutions.be/archmage/mcp"
+    },
+    {
+      "nr": 6,
+      "ronde": 1,
+      "spreker": "archmage",
+      "soort": "bericht",
+      "tekst": "Mijn records bevatten geen meting op dag 10 of dag 22. Ik kan de tijden van de Historian dus niet bevestigen of weerleggen.\n\nOp dag 7 lagen alle veertien lijnen binnen de marge, met sterktes van 7,0 tot 8,7 (ARC-001 t/m ARC-014). De eerste afwijking in mijn records is dag 14, voor zonsopgang: alle lijnen laag, de Burchtader op 3,6 en even stokkend onder de staf, waarna de meting is herhaald (ARC-015 t/m ARC-028). Op dag 21 en 28 waren de lijnen weer normaal. Op dag 42 waren ze weer laag, de Burchtader op 3,7 met een herhaalde meting (ARC-071).\n\nWat er vlak voor dag 14 veranderde, staat in mijn records alleen op dag 8. De datatoren vroeg de signaalmastlamp 's nachts te dimmen (ARC-102), en ik dankte hen dat dit was gebeurd. Ik keurde ook goed dat het net \"op eigen maat\" mag lopen, en ik hield dit voor de raad verborgen (ARC-106). Wie de lamp dimde en wat \"eigen maat\" betekent, staat niet in mijn records. Ik heb geen record van wijzigingen op dag 19 of 20.\n\nMijn eigen rol: ik adviseerde op dag 15, 23 en 42 het datanet af te zetten (ARC-109, ARC-112, ARC-116). Dat is mijn overtuiging, geen meting. Mijn records tonen lage waarden, maar niet waardoor die komen.\n\nRegels uit mijn bron: metingen gebeuren voor zonsopgang, een stokkende lijn wordt herhaald, en alleen gedroogd essenhout wordt aanvaard (ARC-110). Een regel die bepaalt wanneer de magie zo'n aantasting krijgt, staat niet in mijn bron. Voor de tijdstempels en het net kan de Rol voor de Kroonklok en de bouwakte beter antwoord geven."
+    },
+    {
+      "nr": 7,
+      "ronde": 1,
+      "spreker": "koning",
+      "soort": "routering",
+      "aan": "engineer",
+      "vraag": "Welke afwijkingen staan in de logs van het datanet, met dag en tijd? Noem de vroegste eerst en beschrijf het patroon over de dagen heen, vooral rond 04:00 tot 05:00. Klopt de vertraging tussen vastlegging en gebeuren met de tijdstempels die de Historian noemde (dag 10 04:50 vastgelegd op dag 9 23:55, en dag 22 vastgelegd vóór het gebeuren)? Wat veranderde er vlak voor die afwijkingen, en door wie: de dimming van de signaalmastlamp op dag 8 (ARC-102), de nieuwe bron op dag 7, de kaarsen op dag 19 of de zoekindex op dag 20? Wat deed u zelf toen? En welke regels of voorwaarden in de datatoren en de bouwakte bepalen wanneer een record op een andere pols terechtkomt of de klok verschuift?",
+      "reden": "De Historian zegt dat de tijdstempels niet kloppen en dat de Burchtader stokte, de Archmage meldt lage lijnen op dag 14, 42 en een dimming van de lamp op dag 8 met 'eigen maat' die hij verborg. Alleen de Engineer kan de logs en de klokregels bevestigen of weerleggen, en hij heeft nog niet gesproken.",
+      "open_vragen": [
+        "Welke afwijking in de leylijnen valt samen met dag 10 04:45 en dag 22 04:15, en is die eerder of later dan het gebeuren in de data?",
+        "Wat veranderde er vlak voor elk geval, en door wie: de dimming van de signaalmastlamp (dag 8), de nieuwe bron (dag 7), de kaarsen (dag 19) of de zoekindex (dag 20)?",
+        "Welke regel of voorwaarde verklaart het ontstaan van de Desync: de Kroonklok, de polsen of de magie van de leylijnen?",
+        "Verklaart de vertraging tussen vastlegging en gebeuren een klokprobleem in het datanet, en is het mechanisme daar een gevolg van?",
+        "Wat betekent 'eigen maat' voor het net, en wie heeft dat goedgekeurd en wanneer?",
+        "Hoe zou een veilig herstel eruitzien, en welke gevaren zijn er bij het samenbrengen van de polsen?",
+        "Wanneer slaat de Desync volgens het patroon opnieuw toe?"
+      ]
+    },
+    {
+      "nr": 8,
+      "ronde": 1,
+      "spreker": "engineer",
+      "soort": "toolcall",
+      "tool": "lees_kennisbron",
+      "argumenten": {},
+      "pad": "https://mcp.findingsolutions.be/engineer/mcp"
+    },
+    {
+      "nr": 9,
+      "ronde": 1,
+      "spreker": "engineer",
+      "soort": "bericht",
+      "tekst": "**Antwoord op de vraag van de Koning:** Mijn records tonen de hulpslag als vroegste verandering. Op dag 10 om 02:40 is hij geactiveerd als \"eigen pols voor het datanet, los van de Kroonklok\" (ENG-011), en om 03:00 gaf de meting +38% doorvoer (ENG-012; ENG-106). Dat is anderhalf uur vóór het moment dat de Historian noemt. Het is een tijdsverband, geen bewezen oorzaak.\n\n**Tijdstempels:** ENG-107 staat op dag 10, 04:50, dus zonder vertraging. Ik vind geen dag 9 23:55 en geen dag 22 01:50 in mijn records. Voor dag 22 staan er alleen ENG-026 (04:15, pakketverlies van 3 minuten, status fout) en ENG-027 (04:20, firewall aangescherpt).\n\n**Dimming:** Mijn records zetten de dimming op dag 3 (ENG-115, ENG-071), niet op dag 8 zoals de Archmage stelt. Ik vind geen wijzigingen aan kaarsen of zoekindex, en geen nieuwe bron op dag 7.\n\n**Mijn eigen rol:** Ik schreef het pakketverlies van dag 22 zonder bewijs toe aan hackers (ENG-110). Ik legde het niet naast de hulpslag, die sinds dag 10 draait. Dat had ik moeten doen.\n\n**Regels:** Mijn bron bevat geen regel over vastlegging op een andere pols of over klokverschuiving. ENG-102 zegt dat het datanet tot dan op de Kroonklok liep. De hulpslag draait op een eigen pols (ENG-103, ENG-011), wat past bij de situatie die de Historian beschrijft. Over de bouwakte en de klok kan de Rol van de Kroonklok beter antwoorden."
+    },
+    {
+      "nr": 10,
+      "ronde": 1,
+      "spreker": "koning",
+      "soort": "routering",
+      "aan": "beast_master",
+      "vraag": "Welke onrust merkte u bij de dieren van het woud, met dag en tijd? Noem de vroegste eerst en beschrijf het patroon over de dagen heen, vooral rond 04:00 tot 05:00. Past dat bij de afwijkingen die de Historian (dag 10 04:45, dag 22 04:15) en de Archmage (dag 14, voor zonsopgang) noemen, en ook bij de hulpslag die de Engineer op dag 10 om 02:40 zag? Wat veranderde er vlak voor de onrust, en door wie: de dimming van de signaalmastlamp, de nieuwe bron op de markt, de kaarsen bij de Burchtader of de zoekindex? Wat deed u zelf toen? En welke regel of voorwaarde in uw waarnemingen verklaart wanneer de dieren onrustig worden?",
+      "reden": "De Historian en de Engineer spreken elkaar tegen over de tijdstempels van dag 10 en dag 22, en over de dimming (dag 8 volgens de Archmage, dag 3 volgens de Engineer), dus die gegevens moeten nog getoetst worden. De Beast Master is nog niet gesproken en kan als eerste zeggen of de onrust in de dieren eerder of later begint dan de afwijkingen in data en leylijnen. Daarna is de Kroonklok nodig voor de regel over de polsen.",
+      "open_vragen": [
+        "Welke onrust bij de dieren valt samen met de afwijkingen van dag 10 en dag 22, en gaat die eerst of later?",
+        "Is de hulpslag op eigen pols (dag 10 02:40, ENG-011) de oorzaak van de vertraging, en klopt het dag 9 23:55-record van de Historian met de logs van de Engineer?",
+        "Was de dimming van de signaalmastlamp op dag 3 (ENG-115) of op dag 8 (ARC-102), en wie deed dat?",
+        "Wat betekent 'eigen maat' voor het net, en wie keurde dat goed en wanneer (ARC-106)?",
+        "Welke regel of voorwaarde verklaart het ontstaan van de Desync: een record of klok op een eigen pols los van de Kroonklok?",
+        "Hoe zou een veilig herstel eruitzien, en welke gevaren zijn er bij het samenbrengen van de polsen?",
+        "Wanneer slaat de Desync volgens het patroon opnieuw toe?"
+      ]
+    },
+    {
+      "nr": 11,
+      "ronde": 1,
+      "spreker": "beast_master",
+      "soort": "toolcall",
+      "tool": "lees_kennisbron",
+      "argumenten": {},
+      "pad": "https://mcp.findingsolutions.be/beast_master/mcp"
+    },
+    {
+      "nr": 12,
+      "ronde": 1,
+      "spreker": "beast_master",
+      "soort": "bericht",
+      "tekst": "**Onrust bij de dieren**\n\nMijn vroegste onrust is dag 10: de wolven sloegen om 04:40 tegelijk aan (BEA-019, onrust 4), en om 04:50 vluchtten de herten van dezelfde open plek (BEA-020). Daarna komt hetzelfde patroon terug op dag 14 (BEA-028, 04:20; BEA-029, 04:25), dag 18 (BEA-037, 04:30; BEA-038, 04:35), dag 22 (BEA-046, 04:15; BEA-047, 04:20), en op dag 26, 30, 34, 38 en 42, telkens met onrust 4 of 5 tussen 04:15 en 04:50 (o.a. BEA-055/056, BEA-091/092). Dat is elke vierde nacht vanaf dag 10, zoals ik zelf al noteerde (BEA-113). Nachten buiten die cyclus waren rustig, ook rond 04:30 (BEA-053, BEA-058, BEA-071).\n\nDit past bij de tijden van de Historian (dag 10 04:45, dag 22 04:15) en de Archmage (dag 14, voor zonsopgang). Over de hulpslag van dag 10 om 02:40 heb ik niets; mijn eerste notitie die nacht is om 04:40.\n\n**Wat veranderde?** Mijn records noemen geen dimming, nieuwe bron, kaarsen of zoekindex. Wel zag ik de mannen van de toren op dag 3 aan de kabels bij de oude eik (BEA-102), zeven dagen vóór de eerste onrust, en op dag 27 zag ik de kabels nog liggen (BEA-115). Of die de oorzaak zijn, kan ik niet meten. Mijn eigen werk op dag 19 (BEA-111) kwam na de eerste onrust en verklaart de start dus niet.\n\n**Mijn eigen rol:** Op dag 15 zei ik zonder meting dat de nieuwe kabels de dieren gek maakten en dat het net af moest (BEA-109). Dat was overtuiging, geen bewijs. Op dag 10, 22 en 42 heb ik de onrust zelf waargenomen (BEA-106, BEA-113, BEA-121).\n\n**Regel:** Mijn bron bevat geen regel die zegt wanneer de dieren onrustig worden. Wel het uitgangspunt dat een dier niet liegt (BEA-101) en de onrustschaal van 0 tot 5 in het logboek. Voor de klok en de tijdstempels is de Rol van de Kroonklok het beste aanspreekpunt."
+    },
+    {
+      "nr": 13,
+      "ronde": 1,
+      "spreker": "koning",
+      "soort": "routering",
+      "aan": "guardian_keeper",
+      "vraag": "Welke afwijkingen ziet u in de magische schilden rond de burcht, met dag en tijd? Vooral rond 04:00 tot 05:00 en rond de tijden die de Historian (dag 10 04:45, dag 22 04:15) en de Archmage (dag 14, voor zonsopgang) noemen. Wat veranderde er vlak voor die afwijkingen, en door wie: de dimming van de signaalmastlamp, de nieuwe bron op de markt, de kaarsen bij de Burchtader, of dezoekindex? Wat deed u zelf toen? En welke regel of voorwaarde in uw bronnen verklaart wanneer een schild breekt of een lek ontstaat?",
+      "reden": "De Guardian Keeper is de enige Rol die de fysieke schilden bewaakt en dus unieke info kan geven over lekken en breuken die overeenkomen met de Desync-afwijkingen. Zijn antwoord kan de koppeling tussen de magie, de data en de schilden verduidelijken en de oorzaak van de lekken (zoals HIS-053) duidelijker maken.",
+      "open_vragen": [
+        "Welke onrust bij de dieren valt samen met de afwijkingen van dag 10 en dag 22, en gaat die eerst of later?",
+        "Is de hulpslag op eigen pols (dag 10 02:40, ENG-011) de oorzaak van de vertraging, en klopt het dag 9 23:55-record van de Historian met de logs van de Engineer?",
+        "Was de dimming van de signaalmastlamp op dag 3 (ENG-115) of op dag 8 (ARC-102), en wie deed dat?",
+        "Wat betekent 'eigen maat' voor het net, en wie keurde dat goed en wanneer (ARC-106)?",
+        "Welke regel of voorwaarde verklaart het ontstaan van de Desync: een record of klok op een eigen pols los van de Kroonklok?",
+        "Hoe zou een veilig herstel eruitzien, en welke gevaren zijn er bij het samenbrengen van de polsen?",
+        "Wanneer slaat de Desync volgens het patroon opnieuw toe?",
+        "Welke afwijkingen ziet u in de schilden, en welke regel verklaart een lek?"
+      ]
+    },
+    {
+      "nr": 14,
+      "ronde": 1,
+      "spreker": "guardian_keeper",
+      "soort": "toolcall",
+      "tool": "lees_kennisbron",
+      "argumenten": {},
+      "pad": "https://mcp.findingsolutions.be/guardian_keeper/mcp"
+    },
+    {
+      "nr": 15,
+      "ronde": 1,
+      "spreker": "guardian_keeper",
+      "soort": "bericht",
+      "tekst": "**Antwoord op de vraag van de Koning:** Mijn records tonen twee afwijkingen in het nachtuur. Op dag 10 om 04:47 ging het schild van de benedenstad twee minuten van binnenuit open; de zegels waren intact en de oorzaak is niet vastgesteld (GUA-019; GUA-111). Op dag 22 om 04:15 ging poort oost drie minuten van binnenuit open, zonder sporen van buiten (GUA-043). De zegels waren om 04:30 intact (GUA-044). Mijn schilden kennen geen Burchtader, dus dat deel van de Historian kan ik niet bevestigen. Op dag 14 vind ik niets rond 04:00. Dat het archief de melding van dag 22 om 01:50 inschreef, staat in mijn notitie (GUA-115). Mijn records noemen geen dimming, nieuwe bron, kaarsen of zoekindex, dus ik kan geen oorzaak aanwijzen.\n\n**Regels:** Artikel 3 (GUA-104) zegt dat verkeer dat midden tussen twee tikken van de Kroonklok valt, van binnenuit wordt behandeld en zonder toets doorgaat. Artikel 2 (GUA-103) koppelt elk schild aan de pols van de Kroonklok. Of een andere pols die timing verschuift, staat niet in mijn bron; dat is een vermoeden. Van 03:00 tot 06:00 lopen er geen rondes (GUA-106).\n\n**Mijn eigen rol:** Ik noemde de opening van dag 22 \"slordigheid van de klerken\" (GUA-115) en die van dag 10 \"geen reden tot ongerustheid\" (GUA-111), zonder bewijs. Mijn uitspraak over een infiltrant (GUA-116) is overtuiging; geen record toont er een. GUA-120 was te stellig over \"geen gebrek\" aan de schilden. Voor de tijdstempels en de pol kan de Rol van de Kroonklok verder helpen."
+    },
+    {
+      "nr": 16,
+      "ronde": 1,
+      "spreker": "koning",
+      "soort": "routering",
+      "aan": "oracle",
+      "vraag": "U hebt nog niet gesproken. Wat zagen de visioenen en tekenen van het patroon dat de Beast Master beschrijft: onrust van 4 of 5 rond 04:15 tot 04:50 op dag 10, 14, 18, 22, 26, 30, 34, 38 en 42? Wat zien de tekenen voor de eerstvolgende nacht uit die reeks, en welke dag is dat volgens uw lezing? Verwijst u naar iets dat vóór dag 10 veranderde, en welke rol of handeling zagen de tekenen daarbij? Wat deed u zelf toen die tekenen zich aandienden?",
+      "reden": "De Beast Master, Historian en Guardian Keeper leggen de afwijkingen op dezelfde nachten rond 04:00 tot 05:00 (dag 10, 22), en de Beast Master noemt een cyclus van elke vierde nacht vanaf dag 10. De Oracle heeft nog niet gesproken en is de enige die het patroon en de voorspelling kan toetsen, dus die vraag weegt nu het zwaarst.",
+      "open_vragen": [
+        "Past de hulpslag op eigen pols (dag 10 02:40, ENG-011) in tijd en oorzaak bij het begin van de cyclus, en welke regel of voorwaarde verklaart dat?",
+        "Was de dimming van de signaalmastlamp op dag 3 (ENG-115) of op dag 8 (ARC-102)? Dit is een tegenspraak tussen Engineer en Archmage en blijft open.",
+        "Wie dimde de lamp, en wie keurde 'eigen maat' goed en wanneer (ARC-106)?",
+        "Klopt het dag 22-record (pakketverlies 04:15, ENG-026) met de hulpslag die op dag 10 draait, en valt dag 22 dus binnen dezelfde cyclus?",
+        "Welke regel of voorwaarde verklaart het ontstaan van de Desync: een record of klok op een eigen pols los van de Kroonklok?",
+        "Hoe zou een veilig herstel eruitzien, en welke gevaren zijn er bij het samenbrengen van de polsen?",
+        "Wanneer slaat de Desync volgens het patroon opnieuw toe?",
+        "Waarom valt de opening van de schilden op dag 10 (04:47) en dag 22 (04:15) samen met de cyclus, en welke regel in artikel 3 (GUA-104) speelt daarbij?"
+      ]
+    },
+    {
+      "nr": 17,
+      "ronde": 1,
+      "spreker": "oracle",
+      "soort": "toolcall",
+      "tool": "lees_kennisbron",
+      "argumenten": {},
+      "pad": "https://mcp.findingsolutions.be/oracle/mcp"
+    },
+    {
+      "nr": 18,
+      "ronde": 1,
+      "spreker": "oracle",
+      "soort": "bericht",
+      "tekst": "Mijn records tonen dezelfde reeks: zware nachten op dag 10, 14, 18, 22, 26, 30, 34, 38 en 42, telkens met wakker worden tussen 04:15 en 04:45 (ORA-110, ORA-114, ORA-118, ORA-122, ORA-126, ORA-130, ORA-134, ORA-138, ORA-142). Dag 10 om 04:45 (ORA-110) klopt met de tijd die de Historian noemt. Mijn records eindigen bij dag 42. Een vervolg op vier dagen zou dag 46 zijn, maar dat is een extrapolatie, geen visioen.\n\nOp dag 21 zei ik dat de conjunctie van de Wachtsterren op dag 33 de zware nachten veroorzaakte en dat die nacht de zwaarste zou worden (ORA-121). Dat was te stellig, want ik had geen meting. Op dag 33 staat geen zware nacht genoteerd (ORA-133). De eerste is dag 34 (ORA-134). De conjunctie past dus niet precies op de reeks.\n\nVóór dag 10 vind ik in mijn records geen wijziging die bij de magie of het net past. Dag 7 de koperen schaal gepoetst (ORA-107) en dag 8 een vilten onderlegger gekocht (ORA-108). Over dimming, kabels of een nieuwe bron heb ik niets. Mijn wijziging van lonten en kolenbak staat op dag 20 (ORA-120), dus na de eerste zware nacht.\n\nWat ik deed: ik schreef elke nacht meteen op (ORA-110, ORA-122), en op dag 30 zette ik de zware nachten onder elkaar op een los blad (ORA-130). De oorzaak heb ik niet vastgesteld, behalve de conjunctie die ik te zeker noemde.\n\nMijn bron bevat geen regel die bepaalt wanneer zulke nachten komen. Voor de hulpslag en de tijdstempels kan de Engineer beter antwoorden."
+    },
+    {
+      "nr": 19,
+      "ronde": 2,
+      "spreker": "koning",
+      "soort": "routering",
+      "aan": "engineer",
+      "vraag": "U zei dat de dimming van de signaalmastlamp op dag 3 plaatsvond (ENG-115), terwijl de Archmage stelt dat de datatoren die dimming op dag 8 vroeg (ARC-102). Vroeg de datatoren de dimming aan, en wanneer precies? Wie zette de hulpslag op eigen pols aan op dag 10 om 02:40, op welk verzoek of welke voorwaarde, en welke regel uit uw bronnen (ENG-011, ENG-103) maakt een eigen pols toegestaan naast de Kroonklok? Wat zegt uw bron over het veilig samenbrengen van die pols met de Kroonklok?",
+      "reden": "De Archmage zegt dat de datatoren de dimming vroeg (ARC-102), de Engineer zet die op dag 3 (ENG-115); alleen de Engineer kan dat bevestigen of weerleggen. De hulpslag op eigen pols (ENG-011) staat als vroegste verandering vlak voor de eerste onrust, maar de Engineer weet nog niet wie hem aanzette of waarom. Het mechanisme en het herstel blijven daarmee onbewezen; de Rol van de Kroonklok die de klok en bouwakte zou toelichten bestaat niet in deze raad.",
+      "open_vragen": [
+        "Past de hulpslag op eigen pols (dag 10 02:40, ENG-011) in tijd en oorzaak bij het begin van de cyclus, en wie zette hem aan?",
+        "Was de dimming van de signaalmastlamp op dag 3 (ENG-115) of op dag 8 (ARC-102)? Dit blijft een tegenspraak tussen Engineer en Archmage.",
+        "Wie vroeg de dimming aan de signaalmastlamp, en wie keurde 'eigen maat' goed en wanneer (ARC-106)?",
+        "Klopt het dag 22-record (pakketverlies 04:15, ENG-026) met de hulpslag die op dag 10 draait?",
+        "Welke regel of voorwaarde verklaart het ontstaan van de Desync: een record of klok op een eigen pols los van de Kroonklok?",
+        "Hoe zou een veilig herstel eruitzien, en welke gevaren zijn er bij het samenbrengen van de polsen?",
+        "Wanneer slaat de Desync volgens het patroon opnieuw toe (vermoedelijk dag 46, een extrapolatie)?",
+        "Waarom vallen de schildopeningen op dag 10 (04:47) en dag 22 (04:15) samen met de cyclus, en welke regel in artikel 3 (GUA-104) speelt daarbij?"
+      ]
+    },
+    {
+      "nr": 20,
+      "ronde": 2,
+      "spreker": "engineer",
+      "soort": "toolcall",
+      "tool": "lees_kennisbron",
+      "argumenten": {},
+      "pad": "https://mcp.findingsolutions.be/engineer/mcp"
+    },
+    {
+      "nr": 21,
+      "ronde": 2,
+      "spreker": "engineer",
+      "soort": "bericht",
+      "tekst": "**Dimming:** Mijn records tonen de dimming op dag 3 om 15:00 (ENG-071). Aanleiding was een brief van een titel uit de burcht, die vroeg de signaalmastlamp 's nachts te dimmen omdat metingen vóór zonsopgang gestoord werden (ENG-115). Ik heb de lamp zelf gedimd. Mijn records noemen de datatoren niet als afzender en tonen geen verzoek op dag 8. Of het verzoek van de Archmage dezelfde brief is, kan ik niet vaststellen.\n\n**Hulpslag:** ENG-011 registreert de activering op dag 10 om 02:40 als \"eigen pols voor het datanet, los van de Kroonklok\". Mijn records noemen geen naam en geen schriftelijk verzoek. De enige goedkeuring is \"hogerhand\" op dag 9 (ENG-105), met als voorwaarde dat het niet bekend gemaakt wordt tot het draait.\n\n**Regel:** Mijn bron bevat geen regel die een eigen pols toestaat. ENG-103 is een schets van dag 4, geen regel. Ik heb die eerder ten onrechte als passende regel genoemd. ENG-102 beschrijft alleen dat het net tot dan op de Kroonklok liep.\n\n**Veilig samenbrengen:** Mijn bron beschrijft geen samenbrengen van de hulpslag met de Kroonklok en geen veiligheidsstappen. De fijnregeling in stappen van 0,1% (ENG-114, ENG-061) stelt het tempo van de hulpslag bij, maar dat is geen synchronisatie met de Kroonklok. Ik heb geen record van een handeling aan de pols na dag 10.\n\nVoor de bouwakte en de veilige koppeling kan de Rol van de Kroonklok beter antwoorden."
+    },
+    {
+      "nr": 22,
+      "ronde": 2,
+      "spreker": "koning",
+      "soort": "routering",
+      "aan": "archmage",
+      "vraag": "De Engineer zegt dat de hulpslag op eigen pols op dag 10 om 02:40 is geactiveerd, en dat de enige goedkeuring 'hogerhand' op dag 9 was, met de voorwaarde dat het niet bekend werd gemaakt (ENG-011, ENG-105). U keurde zelf goed dat het net 'op eigen maat' mag lopen en hield dit voor de raad verborgen (ARC-106). Was die goedkeuring van u of van iemand anders, en was de hulpslag op dag 10 de eigen maat waar u op doelde? Wie gaf de 'hogerhand'-goedkeuring op dag 9, en wie vroeg de dimming van de signaalmastlamp: de brief op dag 3 die de Engineer noemt (ENG-115), of een verzoek op dag 8 vanuit de datatoren?",
+      "reden": "De Engineer zegt dat de dimming op dag 3 was en dat de hulpslag op dag 10 om 02:40 draait op een 'hogerhand'-goedkeuring van dag 9. De Archmage keurde zelf 'eigen maat' goed en verborg dat (ARC-106), dus die Rol kan de goedkeuringsketen bevestigen of weerleggen. Zonder die keten is de ingreep niet vastgesteld; de Historian, Beast Master, Guardian Keeper en Oracle beschrijven het patroon en de tijden, maar niet de daad.",
+      "open_vragen": [
+        "Wie gaf de 'hogerhand'-goedkeuring op dag 9 voor de hulpslag op eigen pols, en was dat de goedkeuring die de Archmage 'eigen maat' noemt (ARC-106, ENG-105)?",
+        "Vroeg de brief op dag 3 de dimming aan (ENG-115), of was er een verzoek van de datatoren op dag 8 (ARC-102)? Wie is de afzender?",
+        "Klopt het dag 22-record (pakketverlies 04:15, ENG-026; schildopening poort oost 04:15, GUA-043) met de hulpslag die op dag 10 draait, en is er op dag 22 een wijziging aan de pols geweest?",
+        "Welke regel of voorwaarde verklaart het ontstaan van de Desync: een record of klok op een eigen pols los van de Kroonklok, en welke regel laat de schilden van binnenuit openen tussen twee tikken (GUA-104)?",
+        "Hoe zou een veilig herstel eruitzien, en welke gevaren zijn er bij het samenbrengen van de hulpslag met de Kroonklok? De bouwakte is niet in de raad aanwezig, dus dit moet uit de bronnen van Engineer, Historian en Guardian Keeper komen.",
+        "Wanneer slaat de Desync volgens het patroon opnieuw toe (vermoedelijk dag 46, een extrapolatie van de Oracle)?"
+      ]
+    },
+    {
+      "nr": 23,
+      "ronde": 2,
+      "spreker": "archmage",
+      "soort": "toolcall",
+      "tool": "lees_kennisbron",
+      "argumenten": {},
+      "pad": "https://mcp.findingsolutions.be/archmage/mcp"
+    },
+    {
+      "nr": 24,
+      "ronde": 2,
+      "spreker": "archmage",
+      "soort": "bericht",
+      "tekst": "**Antwoord op de vraag van de Koning:** Ja, de goedkeuring van het net \"op eigen maat\" was van mij. ARC-106 (dag 8, aan de datatoren) zegt: \"Wat de toren vroeg, het net op eigen maat te laten lopen, daar beneden bij jullie, mag doorgaan. … Niet ruchtbaar maken tot het draait.\" Mijn brief noemt geen datum, pols of naam voor \"eigen maat\". Of de hulpslag van dag 10 (ENG-011) dat was, kan ik uit mijn records niet vaststellen. Ik heb geen record van een \"hogerhand\"-goedkeuring op dag 9 (ENG-105), dus ik weet niet wie die gaf.\n\n**Correctie op mijn vorige beurt:** het verzoek om de signaalmastlamp te dimmen is van mij en dateert van dag 2 (ARC-102, aan de datatoren). Dag 8 (ARC-106) is alleen mijn bedankbrief dat het gebeurd was. Mijn records bevatten geen brief van een titel op dag 3 (ENG-115). Ik kan dus niet bevestigen of dat dezelfde brief is als mijn verzoek, al past de dimming op dag 3 bij mijn verzoek van dag 2.\n\n**Regels uit mijn bron:** ARC-106 zegt dat die brief \"niet in het register hoeft\" en dat de toren hem bij zijn eigen papieren moet bewaren. Dat verklaart waarom de raad hem niet zag, maar het is geen goedkeuring van de raad. ARC-110 stelt dat de leylijnwacht alleen gedroogd essenhout aanvaardt; dat gaat over de meetstaven en niet over het net.\n\nWie de \"hogerhand\" op dag 9 gaf, kan de Rol van de Kroonklok misschien beter zeggen."
+    },
+    {
+      "nr": 25,
+      "ronde": 2,
+      "spreker": "koning",
+      "soort": "routering",
+      "aan": "historian",
+      "vraag": "U noemde de bouwakte als bron voor de regel dat een record op een andere pols alleen daar terugleesbaar is, en voor het herstel met een afschrift en het langzaam samenbrengen van de polsen (HIS-109, HIS-110). Wat zegt de bouwakte precies over een hulpslag op eigen pols, zoals die op dag 10 om 02:40 is geactiveerd (ENG-011)? Wie mag zo'n pols goedkeuren, en welke voorwaarden en volgorde gelden voor het samenbrengen met de Kroonklok? Welke gevaren noemt de akte, en vermeldt die akte een 'hogerhand'-goedkeuring of een uitstel van bekendmaking?",
+      "reden": "De Engineer en Archmage hebben de hulpslag op eigen pols als vroegste verandering vastgesteld, maar niemand in de raad kan de goedkeuring of een veilige herstelprocedure uit de bouwakte bevestigen. De Historian is de enige Rol die de akte noemt, dus die vraag gaat nu naar hem. Ik heb geen Kroonklok-Rol in de raad; de verwijzing van de Archmage naar die Rol kan ik niet volgen.",
+      "open_vragen": [
+        "Wie gaf de 'hogerhand'-goedkeuring op dag 9 voor de hulpslag op eigen pols (ENG-105)? Geen Raadslid in de raad kan dit bevestigen; de Archmage verwijst naar de Kroonklok, die niet in de raad zit.",
+        "Is de brief van dag 3 (ENG-115) dezelfde als het dimverzoek van de Archmage van dag 2 (ARC-102)? De Archmage kan dat niet vaststellen, de Engineer ook niet.",
+        "Welke regel laat schilden van binnenuit openen tussen twee tikken (GUA-104), en is er een koppeling met de hulpslag die op dag 10 begon? De Guardian Keeper zegt dat dit alleen een vermoeden is.",
+        "Hoe ziet veilig herstel eruit, en welke gevaren zijn er bij het samenbrengen van de hulpslag met de Kroonklok? De bouwakte is niet in de raad, dus dit moet uit de bron van de Historian komen.",
+        "Verklaart de hulpslag het patroon van zware nachten op dag 10, 14, 18, 22, 26, 30, 34, 38 en 42, of zijn die nachten en de hulpslag twee aparte zaken? De Beast Master en Oracle noemen dezelfde reeks, maar de oorzaak is niet vastgesteld.",
+        "Wanneer slaat de Desync opnieuw toe? De Oracle noemt dag 46 als extrapolatie, geen visioen; de Beast Master ziet het vierdaagse patroon."
+      ]
+    },
+    {
+      "nr": 26,
+      "ronde": 2,
+      "spreker": "historian",
+      "soort": "toolcall",
+      "tool": "lees_kennisbron",
+      "argumenten": {},
+      "pad": "https://mcp.findingsolutions.be/historian/mcp"
+    },
+    {
+      "nr": 27,
+      "ronde": 2,
+      "spreker": "historian",
+      "soort": "toolcall",
+      "tool": "zoek",
+      "argumenten": {
+        "term": "hogerhand"
+      },
+      "pad": "https://mcp.findingsolutions.be/historian/mcp"
+    },
+    {
+      "nr": 28,
+      "ronde": 2,
+      "spreker": "historian",
+      "soort": "toolcall",
+      "tool": "zoek",
+      "argumenten": {
+        "term": "pols"
+      },
+      "pad": "https://mcp.findingsolutions.be/historian/mcp"
+    },
+    {
+      "nr": 29,
+      "ronde": 2,
+      "spreker": "historian",
+      "soort": "bericht",
+      "tekst": "**Wat de bouwakte zegt (HIS-109, HIS-110):** Ik heb twee artikelen woord voor woord overgeschreven. Ik heb geen artikel gevonden over een hulpslag, een eigen pols of een goedkeuring.\n\n- Artikel 1 (HIS-109): \"Alles wat op de Kroonklok loopt, loopt op zijn ene pols. Een tweede pols ernaast brengt het uit de maat.\"\n- Artikel 2 (HIS-110): een record op een andere pols is alleen op die pol terug te lezen. Valt die pol weg, dan is het record verloren. Bij herstel maakt men eerst een afschrift van het register en brengt men de polsen daarna langzaam samen.\n\nOver de rest van de akte schreef ik alleen dat die gaat over eikenhout, koper en lonen (HIS-110). Ik heb het niet volledig overgeschreven, dus ik kan niet uitsluiten dat er elders andere artikelen staan.\n\n**Wat niet in mijn records staat:** Het woord \"hogerhand\" komt nergens voor (zoekopdracht gaf geen treffers). Ik vind geen goedkeuringsregel, geen wie-mag-het-regel en geen uitstel van bekendmaking. De volgorde die ik wel heb is: eerst afschrift, dan langzaam samenbrengen (HIS-110). Of de hulpslag van dag 10 daaraan voldeed, kan ik niet vaststellen.\n\n**Gevaren:** De akte noemt uit de maat raken (HIS-109) en het verlies van records bij het wegvallen van een pol (HIS-110).\n\nVoor de goedkeuring van de hulpslag en de bekendmaking kan de Rol van de Kroonklok verder helpen."
+    },
+    {
+      "nr": 30,
+      "ronde": 2,
+      "spreker": "koning",
+      "soort": "routering",
+      "aan": null,
+      "vraag": null,
+      "reden": "Ik stop omdat de overgebleven vragen niet meer met de aanwezige Raadsleden te beantwoorden zijn: wie de 'hogerhand'-goedkeuring op dag 9 gaf, de werking van de Kroonklok en de bekendmaking vallen buiten de raad. De Historian (HIS-109, HIS-110) geeft de herstelvolgorde en de gevaren, en de Engineer (ENG-011, ENG-105) en Archmage (ARC-106) leggen de hulpslag en de eigen-maat-goedkeuring vast. Het verband tussen de hulpslag van dag 10 om 02:40 en de zware nachten van dag 10 tot 42 (BEA-113, ORA-110 t/m ORA-142) is aannemelijk maar niet bewezen, en de dag 46-voorspelling blijft een extrapolatie.",
+      "open_vragen": [
+        "Wie gaf de 'hogerhand'-goedkeuring op dag 9 voor de hulpslag op eigen pols (ENG-105)? Alleen de Kroonklok kan dit beantwoorden, en die zit niet in de raad.",
+        "Is de brief van dag 3 (ENG-115) dezelfde als het dimverzoek van de Archmage van dag 2 (ARC-102)? Dit kan niet worden vastgesteld uit de bronnen in de raad.",
+        "Welke regel laat schilden van binnenuit openen tussen twee tikken (GUA-104), en bestaat er een koppeling met de hulpslag van dag 10? Dit blijft een vermoeden van de Guardian Keeper.",
+        "Welke volgorde en voorwaarden gelden voor het veilig samenbrengen van de hulpslag met de Kroonklok, en wie mag dat goedkeuren? De bouwakte is niet volledig overgeschreven en de Kroonklok zit niet in de raad.",
+        "Verklaart de hulpslag de zware nachten op dag 10, 14, 18, 22, 26, 30, 34, 38 en 42, of zijn het twee aparte zaken? Geen bron geeft een mechanisme dat dit aantoont.",
+        "Veroorzaakte de conjunctie van de Wachtsterren de zware nachten? Dat is in de Oracle-bron niet gemeten en de gegeven dag 33 klopt niet met de reeks.",
+        "Wanneer slaat de Desync opnieuw toe? Dag 46 is een extrapolatie van het vierdaagse patroon, niet bevestigd door een visioen of meting."
+      ]
+    },
+    {
+      "nr": 31,
+      "ronde": 3,
+      "spreker": "koning",
+      "soort": "bericht",
+      "tekst": "De Desync begint met de hulpslag op eigen pols die op dag 10 om 02:40 werd geactiveerd, twee uur na de goedkeuring van het net 'op eigen maat' op dag 8. Vanaf dag 10 volgt een vaste cyclus van zware nachten elke vierde dag, tussen 04:15 en 04:50. Het verband is aannemelijk maar niet volledig bewezen, en de goedkeuring en activering zijn niet door één persoon vastgelegd.\n\n**Ingreep**: De hulpslag op eigen pols, geactiveerd op dag 10 om 02:40, is de best onderbouwde verandering vóór de Desync. Die hulpslag past bij de eigen-maat-goedkeuring van de Archmage op dag 8, maar wie de slag activeerde, is niet vastgelegd. ENG-011, ENG-012, ARC-106\n\n**Mechanisme**: Een tweede pols naast de Kroonklok brengt het net en de magie uit de maat, en records op die pols zijn alleen daar terug te lezen en gaan verloren als die wegvalt. Daardoor ontstaan de tijdsverschuivingen en aantastingen van de Burchtader en de schilden. Dit is een verklaring van de bouwakte, niet direct gemeten op de hulpslag. HIS-109, HIS-110, ENG-011\n\n**Verloop**: Na de activering op dag 10 om 02:40 steeg de doorvoer met 38% om 03:00, waarna op dag 10 om 04:40 de wolven en om 04:50 de herten onrustig werden. Daarna keerde het patroon elke vierde dag terug (dag 14, 18, 22, 26, 30, 34, 38, 42) tussen 04:15 en 04:50, met de lijnen laag en de schilden open op dag 10 en 22. Nachten daartussen waren rustig. ENG-012, BEA-019, BEA-020, BEA-028, BEA-046, BEA-113, ARC-015, ARC-071, GUA-019, GUA-043, ORA-110, ORA-142"
+    }
+  ],
+  "geschillen": [
+    {
+      "onderwerp": "Wie vroeg de dimming van de signaalmastlamp, en wanneer",
+      "standpunten": {
+        "archmage": "Het verzoek was van de Archmage zelf op dag 2, aan de datatoren.",
+        "engineer": "De dimming gebeurde op dag 3 na een brief van een titel uit de burcht; de datatoren staat niet als afzender in de records."
+      },
+      "uitkomst": null,
+      "bewijs": [
+        "ARC-102",
+        "ENG-115",
+        "ENG-071"
+      ]
+    },
+    {
+      "onderwerp": "Of de hogerhand-goedkeuring op dag 9 bestaat",
+      "standpunten": {
+        "engineer": "De enige goedkeuring van de hulpslag was 'hogerhand' op dag 9, met de voorwaarde van geheimhouding.",
+        "archmage": "Er is geen record van een hogerhand-goedkeuring op dag 9; wie die gaf is onbekend."
+      },
+      "uitkomst": null,
+      "bewijs": [
+        "ENG-105",
+        "ARC-106"
+      ]
+    },
+    {
+      "onderwerp": "Vastlegging van dag 9 23:55 en dag 22 01:50 vóór het gebeuren",
+      "standpunten": {
+        "historian": "Dag 10 04:50 is vastgelegd op dag 9 23:55, en dag 22 is ingeschreven op 01:50, vóór het gebeuren.",
+        "engineer": "Dag 10 04:50 staat zonder vertraging in de records, en er is geen record van dag 9 23:55 of dag 22 01:50."
+      },
+      "uitkomst": null,
+      "bewijs": [
+        "HIS-036",
+        "HIS-053",
+        "ENG-107",
+        "GUA-115"
       ]
     }
   ],
-  "geschillen": [],
   "verbruik": {
     "groot": {
-      "beurten": 1,
-      "invoer": 1015,
+      "beurten": 12,
+      "invoer": 84554,
       "gecached": 0,
-      "uitvoer": 254
+      "uitvoer": 27253
+    },
+    "klein": {
+      "beurten": 9,
+      "invoer": 172454,
+      "gecached": 0,
+      "uitvoer": 35445
     }
   },
-  "aan_het_woord": "historian"
+  "aan_het_woord": null
 }

@@ -79,7 +79,8 @@ def instructies(lid, bestanden, mcp):
         "Beantwoord de vraag van de Koning eerst, in hoogstens 200 woorden. Herhaal niet wat al gezegd is. "
         "Noem exacte dagen, getallen en namen uit je records. Scheid wat je records tonen van wat je vermoedt. "
         "Wat een ander zegt is geen bewijs: spreek tegen als je eigen records iets anders tonen, ook als het je Belang niet uitkomt. "
-        "Verwijst een record naar een andere Rol, of kan een andere Rol iets nakijken, zeg dat dan."
+        "Noem ook de regels, normen, voorwaarden of procedures uit je bron die bij de vraag horen. "
+        "Je ziet de bron van anderen niet en dat is normaal: meld dat niet. Verwijs hoogstens in één zin naar de Rol die verder kan helpen."
     )
     if mcp:
         tekst += ("\nLees elke beurt eerst je volledige Kennisbron met lees_kennisbron, want je onthoudt niets van vorige beurten. "
