@@ -69,6 +69,16 @@
   .vertrouwen .spoor { height: 8px; border-radius: 4px; background: var(--lijn); overflow: hidden; margin: 4px 0 6px; }
   .vertrouwen .spoor span { display: block; height: 100%; background: var(--kleur); }
   .vertrouwen .reden { color: var(--zacht); overflow-wrap: anywhere; }
+  #invloed svg { display: block; width: 100%; height: auto; }
+  #invloed .web { fill: none; stroke: var(--lijn); stroke-width: 1; }
+  #invloed .vlak { fill: color-mix(in srgb, var(--koning) 26%, transparent); stroke: var(--koning); stroke-width: 2; stroke-linejoin: round; }
+  #invloed .hoek { fill: var(--tekst); font-size: 11.5px; }
+  #invloed .hoek .pct { font-weight: 650; }
+  #invloed .ring { fill: var(--zacht); font-size: 9px; }
+  #invloed .merk { stroke: var(--paneel); stroke-width: 2; }
+  #invloed g.as:hover .merk { r: 7; }
+  .dwaal { border-left: 3px solid var(--kleur); padding: 2px 0 2px 8px; margin: 6px 0; overflow-wrap: anywhere; }
+  .stem .fout { color: var(--fout); font-weight: 600; }
   .badge { font-weight: 650; color: var(--kleur); }
   .melding { padding: 40px 16px; text-align: center; color: var(--zacht); }
 </style>
@@ -86,6 +96,7 @@
     <section id="scoresectie" hidden><h2>Feedbackscores</h2><div id="scores"></div></section>
     <section><h2>Spelregels</h2><div id="checks"></div></section>
     <section><h2>Verbruik</h2><div id="verbruik"></div></section>
+    <section id="invloedsectie" hidden><h2>Invloed op het Verdict</h2><div id="invloed"></div></section>
     <section><h2>Council Verdict</h2><div id="verdict"><span class="leeg">nog geen verdict.json</span></div></section>
   </aside>
 </main>
@@ -195,7 +206,7 @@ function render(trace, verdict) {
     document.getElementById("scores").innerHTML = rij.map(([r, g]) =>
       `<details class="score" style="--kleur:${kleur(r)}"><summary title="Toon de feedback"><span class="stip"></span><span>${esc(NAMEN[r] || r)}</span><span class="spoor"><span style="width:${Math.max(0, Math.min(100, Number(g.score) * 10 || 0))}%"></span></span><b class="punt">${esc(punt(g.score))}</b></summary>`
       + (sco.stemmen || []).filter(s => s.aan === r).map(s =>
-        `<div class="stem"><b style="color:${kleur(s.van)}">${esc(NAMEN[s.van] || s.van)}</b> gaf ${esc(s.score)}: ${opmaak(s.feedback)}</div>`).join("")
+        `<div class="stem"><b style="color:${kleur(s.van)}">${esc(NAMEN[s.van] || s.van)}</b> gaf ${esc(s.score)}: ${opmaak(s.feedback)}${(s.fouten || []).map(f => `<br><span class="fout">Fout:</span> ${opmaak(f)}`).join("")}</div>`).join("")
       + `</details>`).join("")
       + `<div class="getal">Gemiddelde op 10 van de andere Raadsleden en de Koning. Klik voor de feedback.${zonder ? " Geen geldige stem van: " + esc(zonder) + "." : ""}</div>`;
   }
@@ -219,6 +230,8 @@ function render(trace, verdict) {
     ? `<table>${Object.entries(v).map(([m, x]) => `<tr><td>${esc(m)} · ${x.beurten ?? x.calls} beurten</td><td>${(x.invoer || 0).toLocaleString("nl-BE")} in · ${(x.uitvoer || 0).toLocaleString("nl-BE")} uit</td></tr>`).join("")}</table>`
     : '<span class="leeg">nog geen calls</span>';
 
+  toonInvloed(trace, verdict);
+
   // Verdict
   const vd = document.getElementById("verdict");
   if (!verdict || verdict.run_id !== trace.run_id) {
@@ -235,8 +248,55 @@ function render(trace, verdict) {
       + slot("Ingreep", o.ingreep) + slot("Mechanisme", o.mechanisme) + slot("Verloop", o.verloop)
       + `<div class="slot"><b>Herstelplan</b><ol>${(verdict.acties || []).map(a => `<li>${opmaak(a.actie)}</li>`).join("")}</ol></div>`
       + `<div class="slot"><b>Risico's</b><ol>${(verdict.risicos || []).map(r => `<li>${opmaak(r.risico)}</li>`).join("")}</ol></div>`
+      + ((verdict.dwaalsporen || []).length ? `<div class="slot"><b>Dwaalsporen</b>${verdict.dwaalsporen.map(x =>
+          `<div class="dwaal" style="--kleur:${kleur(x.van)}"><s>${opmaak(x.bewering)}</s> <span class="badge">${esc(NAMEN[x.van] || x.van)}</span><br>${opmaak(x.waarom)} ${(x.bewijs || []).map(i => opmaak(i)).join(" ")}</div>`).join("")}</div>` : "")
       + (vs ? `<div class="slot"><b>Voorspelling · dag ${esc(vs.dag)}</b>${opmaak(vs.bewering)} ${(vs.bewijs || []).map(i => opmaak(i)).join(" ")}</div>` : "");
   }
+}
+
+// Invloed: hoe zwaar weegt het bewijs van elk Raadslid in het Verdict? Elk onderdeel telt even zwaar;
+// binnen een onderdeel krijgt elke Rol haar aandeel in de aangehaalde record-ID's. Samen 100%.
+function invloed(verdict, rollen) {
+  const o = verdict.oorzaak || {};
+  const delen = [["Ingreep", o.ingreep?.bewijs], ["Mechanisme", o.mechanisme?.bewijs], ["Verloop", o.verloop?.bewijs],
+    ["Herstelplan", (verdict.acties || []).flatMap(a => a.bewijs || [])], ["Voorspelling", verdict.voorspelling?.bewijs]]
+    .map(([naam, b]) => [naam, [...new Set(b || [])]]).filter(([, b]) => b.length);
+  return rollen.map(r => {
+    const per = delen.map(([naam, b]) => [naam, b.filter(i => PREFIX[String(i).slice(0, 3)] === r).length, b.length]);
+    return { rol: r, deel: delen.length ? per.reduce((s, [, n, t]) => s + n / t, 0) / delen.length : 0, per };
+  });
+}
+
+function radar(data) {
+  const W = 320, H = 268, cx = W / 2, cy = 132, R = 84, n = data.length;
+  const top = Math.max(0.1, Math.ceil(Math.max(...data.map(d => d.deel)) * 10) / 10);
+  const pt = (i, f) => { const h = -Math.PI / 2 + i * 2 * Math.PI / n; return [cx + Math.cos(h) * R * f, cy + Math.sin(h) * R * f]; };
+  const lijn = f => data.map((d, i) => pt(i, typeof f === "function" ? f(d) : f).map(x => x.toFixed(1)).join(",")).join(" ");
+  const pct = x => Math.round(x * 100) + "%";
+  const ringen = [0.25, 0.5, 0.75, 1].map(f => `<polygon class="web" points="${lijn(f)}"/>`).join("");
+  const assen = data.map((d, i) => {
+    const [x, y] = pt(i, 1), [mx, my] = pt(i, d.deel / top), [tx, ty] = pt(i, 1.16);
+    const anker = Math.abs(tx - cx) < 8 ? "middle" : tx > cx ? "start" : "end";
+    const naam = NAMEN[d.rol] || d.rol, uitleg = `${naam}: ${pct(d.deel)}\n` + d.per.map(([w, a, t]) => `${w}: ${a} van ${t} ID's`).join("\n");
+    const dy = Math.abs(tx - cx) < 8 ? (ty < cy ? -10 : 8) : 0;
+    return { as: `<line class="web" x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}"/>`,
+      merk: `<g class="as"><title>${esc(uitleg)}</title><circle cx="${mx.toFixed(1)}" cy="${my.toFixed(1)}" r="13" fill="transparent"/><circle class="merk" cx="${mx.toFixed(1)}" cy="${my.toFixed(1)}" r="5" fill="${kleur(d.rol)}"/>`
+        + `<text class="hoek" text-anchor="${anker}" x="${tx.toFixed(1)}" y="${(ty + dy).toFixed(1)}"><tspan>${esc(naam)}</tspan><tspan class="pct" x="${tx.toFixed(1)}" dy="13">${pct(d.deel)}</tspan></text></g>` };
+  });
+  const tekst = data.map(d => `${NAMEN[d.rol] || d.rol} ${pct(d.deel)}`).join(", ");
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Invloed op het Verdict: ${esc(tekst)}">${ringen}${assen.map(a => a.as).join("")}<polygon class="vlak" points="${lijn(d => d.deel / top)}"/>`
+    + `<text class="ring" x="${cx + 4}" y="${(cy - R + 11).toFixed(1)}">${pct(top)}</text>${assen.map(a => a.merk).join("")}</svg>`;
+}
+
+function toonInvloed(trace, verdict) {
+  const rollen = trace.raadsleden || [];
+  const data = verdict && verdict.run_id === trace.run_id && rollen.length >= 3 ? invloed(verdict, rollen) : [];
+  const ok = data.some(d => d.deel > 0);
+  document.getElementById("invloedsectie").hidden = !ok;
+  if (!ok) return;
+  const eerste = data.reduce((a, b) => b.deel > a.deel ? b : a);
+  document.getElementById("invloed").innerHTML = radar(data)
+    + `<div class="getal">${esc(NAMEN[eerste.rol] || eerste.rol)} woog het zwaarst door. Aandeel in het bewijs (record-ID's) dat de Koning in het Verdict gebruikte; ingreep, mechanisme, verloop, herstelplan en voorspelling tellen elk even zwaar. Wijs een punt aan voor de telling.</div>`;
 }
 
 async function haal(pad) {

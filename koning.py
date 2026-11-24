@@ -132,13 +132,15 @@ Regels:
 - Schrijf niemand iets toe dat hij in het debat niet zelf zei.
 - Gebruik als bewijs alleen ID's uit de gegeven lijst, en alleen als dat record de bewering echt steunt. Neem per deel het sterkste bewijs, bij voorkeur uit meerdere bronnen.
 - Maak eerst de keten: van ingreep naar elk belangrijk symptoom, stap voor stap, met de regel of voorwaarde uit het debat die de stap verklaart. Gebruik die keten voor het mechanisme en neem de ID's van de regels én van de symptomen op als bewijs. Een stap zonder steun in het debat laat je weg.
-- Wees precies in de oorzaak: wie, wat, welke dag; de hele keten van ingreep naar symptomen; het ritme of patroon in de tijd met dagen en getallen.
+- Wees precies in de oorzaak: wie deed het, wie keurde het goed, wat, welke dag; de hele keten van ingreep naar symptomen; het ritme of patroon in de tijd met dagen en getallen.
+- Het verloop staat in de volgorde van de tijd en gebruikt het volledige ritme dat onafhankelijke bronnen delen, niet alleen de dagen met het opvallendste symptoom.
 - Weet je een deel niet, dan bewering null en bewijs []. Gok niet.
 - acties staan in uitvoeringsvolgorde en houden rekening met voorwaarden en afhankelijkheden uit het debat. Volg een herstelprocedure als een Raadslid er een noemde. Noem wie het doet, en laat het plan niet wachten op iemand of iets dat volgens het debat niet beschikbaar is.
 - risicos gaan over wat bij herstel of bij niets doen kan mislopen, elk met een mitigatie.
-- voorspelling: dag (geheel getal) waarop de Desync opnieuw toeslaat als niemand ingrijpt, met de berekening. Geen basis in het debat? Dan null.
+- voorspelling: dag (geheel getal) waarop de Desync opnieuw toeslaat als niemand ingrijpt, met de berekening uit het volledige ritme. De dag ligt na de laatste dag waarover het debat records heeft. Geen basis in het debat? Dan null.
 - zekerheid is 0 tot 1 en eerlijk.
 - vertrouwen: hoe zeker je bent van het hele Verdict, als geheel getal van 0 tot 100, met een reden van één of twee zinnen: wat draagt het, en wat is de zwakste schakel? Het past bij de zekerheid per deel; een ketting is niet sterker dan haar zwakste schakel.
+- dwaalsporen: verklaringen uit het debat die niet kloppen of geen bewijs hebben, met wie ze gaf, waarom ze afvallen en het bewijs dat ze weerlegt. Neem ze niet op als oorzaak of risico. Geen? Dan [].
 - geschillen: echte tegenspraken tussen Raadsleden in dit debat, met ieders standpunt. uitkomst null en bewijs [] als het niet beslecht is. Geen tegenspraak? Dan []. "Dat staat niet in mijn bron" is geen tegenspraak. Beslecht een geschil als de records samen een antwoord geven, ook als geen Raadslid dat zelf uitsprak.
 
 Antwoord in het Nederlands met alleen dit JSON-object:
@@ -149,6 +151,7 @@ Antwoord in het Nederlands met alleen dit JSON-object:
  "risicos": [{"risico": "...", "mitigatie": "..."}],
  "voorspelling": {"dag": 1, "bewering": "...", "bewijs": ["ID"]} of null,
  "vertrouwen": {"score": 0, "reden": "..."},
+ "dwaalsporen": [{"bewering": "...", "van": "<rol>", "waarom": "...", "bewijs": ["ID"]}],
  "geschillen": [{"onderwerp": "...", "standpunten": {"<rol>": "..."}, "uitkomst": "..." of null, "bewijs": ["ID"]}]}"""
 
 
@@ -156,14 +159,13 @@ CONTROLE = """Dit is je eerste Verdict:
 
 {verdict}
 
-Lees het kritisch na tegen het debat en geef het volledige, verbeterde JSON-object, met een extra veld "correcties": ["wat je verbeterde en waarom"] ([] als alles klopt). Je verbetert en versterkt; je breekt niet af. Schrap een verband alleen als een record of Raadslid het tegenspreekt, nooit omdat geen Raadslid het uitsprak. "Dat kan ik niet nakijken", "geen bewijs van oorzaak" of "staat niet in mijn bron" is geen tegenspraak. Verlaag een zekerheid alleen om een fout die je noemt. Let op:
-1. Dagen, tijden, aantallen en tussentijden: klopt elke berekening?
-2. Staat er iets dat een Raadslid in het debat zelf tegensprak of introk? Dan weg ermee. Een middel dat volgens een Raadslid niet dient voor een actie, hoort niet in die actie.
-3. Steunt elk ID de bewering waar het bij staat, en is het belangrijkste bewijs gebruikt? Ontbreekt een regel of voorwaarde die een symptoom verklaart?
-4. Wie deed wat: noemt het debat een dader of goedkeurder, ook in de ik-vorm, dan staat die in de ingreep.
-5. Is elke bewering een besluit, met de twijfel in zekerheid?
-6. Is het herstelplan uitvoerbaar, in de juiste volgorde, en neemt het de oorzaak weg?
-7. Is elk geschil een echte tegenspraak, en kan het met de records beslecht worden?"""
+Lees het na en geef het volledige JSON-object terug, met een extra veld "correcties": ["wat je verbeterde en waarom"] ([] als alles klopt). Verander alleen wat echt fout is:
+1. Een berekening van dagen, tijden of tussentijden die niet klopt.
+2. Gebeurtenissen die niet in de volgorde van de tijd staan.
+3. Zinnen in het Verdict die elkaar tegenspreken, bijvoorbeeld een risico dat een weerlegd spoor weer als oorzaak noemt.
+4. Een middel of feit dat een Raadslid in het debat uitdrukkelijk weerlegde of introk.
+5. Een dader, goedkeurder of verklarende regel die in het debat staat en ontbreekt: voeg die toe, met bewijs.
+Laat al het andere staan: beweringen, bewijs, verbanden, zekerheid, vertrouwen en de voorspelling. Schrap nooit iets omdat geen Raadslid het uitsprak of nakeek."""
 
 
 class Koning:
@@ -297,6 +299,7 @@ class Koning:
         """Geeft (verdict, geschillen) terug, geldig volgens schema/ en alleen met ID's uit het debat."""
         ids = bekende_ids(beurten)
         sprekers = {b["spreker"] for b in berichten(beurten)}
+        laatste = laatste_dag(beurten)
 
         def keur(d):
             fouten = []
@@ -329,6 +332,10 @@ class Koning:
                 dag = d["voorspelling"].get("dag")
                 if type(dag) is not int or dag < 1:
                     fouten.append("voorspelling: dag moet een geheel getal vanaf 1 zijn")
+            for x in d.get("dwaalsporen") or []:
+                bewijs("dwaalsporen", x)
+                if x.get("van") not in sprekers or not is_tekst(x.get("bewering")) or not is_tekst(x.get("waarom")):
+                    fouten.append("dwaalsporen: bewering, waarom en van (een rol die sprak) zijn nodig")
             for g in d.get("geschillen") or []:
                 bewijs("geschillen", g, verplicht=g.get("uitkomst") is not None)
                 if set(g.get("standpunten") or {}) - sprekers:
@@ -352,6 +359,11 @@ class Koning:
                     fouten.append("mechanisme: steun de keten op records uit minstens twee bronnen, met de regels die de symptomen verklaren")
                 elif not isinstance(d["oorzaak"][s].get("zekerheid"), (int, float)):
                     fouten.append(f"{s}: zekerheid ontbreekt")
+            for naam, tekst in (("verloop", d["oorzaak"]["verloop"].get("bewering")), ("samenvatting", d["samenvatting"])):
+                if tijdsfout(tekst):
+                    fouten.append(f"{naam}: niet in de volgorde van de tijd ({tijdsfout(tekst)})")
+            if d.get("voorspelling") and d["voorspelling"]["dag"] < laatste:
+                fouten.append(f"voorspelling: dag {d['voorspelling']['dag']} ligt vóór dag {laatste}, waarover het debat al spreekt; reken verder vanaf het einde van het ritme")
             if not d.get("voorspelling"):
                 fouten.append("voorspelling ontbreekt: leid ze af uit het patroon in het debat, of null als er geen patroon is")
             return fouten
@@ -376,7 +388,7 @@ class Koning:
                 d, fouten = d2, f2
         if d is not None and not fouten:  # tweede blik: de Koning toetst zijn eigen Verdict aan het debat
             beter, f2 = vraag(invoer + "\n\n" + CONTROLE.replace("{verdict}", json.dumps(d, ensure_ascii=False, indent=1)))
-            if beter is not None and not f2 and not verzwakt(d, beter):
+            if beter is not None and not f2 and not verzwakt(d, beter, laatste):
                 d = beter
                 c = d.get("correcties")
                 self.correcties = [x for x in c if is_tekst(x)] if isinstance(c, list) else []
@@ -387,8 +399,8 @@ class Koning:
         return schoon(d or {}, run_id, ids, sprekers)
 
 
-def verzwakt(oud, nieuw):
-    """Verloor het Verdict bij de controle een deel, veel bewijs of een duidelijk besluit? Dan blijft het oude staan."""
+def verzwakt(oud, nieuw, laatste=0):
+    """Maakte de controle het Verdict zwakker (minder bewijs, zekerheid of onderdelen)? Dan blijft het oude staan."""
     for s in SLOTS:
         o, n = oud["oorzaak"][s], nieuw["oorzaak"][s]
         if o.get("bewering") and not n.get("bewering"):
@@ -397,12 +409,43 @@ def verzwakt(oud, nieuw):
             continue
         if not GEEN_BESLUIT.search(o["bewering"]) and GEEN_BESLUIT.search(n["bewering"]):
             return True
-        if len(n.get("bewijs") or []) < 0.5 * len(o.get("bewijs") or []):
+        if len(n.get("bewijs") or []) < 0.8 * len(o.get("bewijs") or []):
             return True
         zo, zn = o.get("zekerheid"), n.get("zekerheid")
-        if isinstance(zo, (int, float)) and isinstance(zn, (int, float)) and zo - zn > 0.25:
+        if isinstance(zo, (int, float)) and isinstance(zn, (int, float)) and zo - zn > 0.101:
             return True
-    return bool(oud.get("voorspelling")) and not nieuw.get("voorspelling")
+    if any(len(nieuw.get(x) or []) < len(oud.get(x) or []) for x in ("acties", "dwaalsporen", "keten")):
+        return True
+    vo, vn = oud.get("voorspelling") or {}, nieuw.get("voorspelling") or {}
+    if vo and not vn:
+        return True
+    # een voorspelling die al klopte met de tijd, verandert niet meer
+    return bool(vo) and vo.get("dag") != vn.get("dag") and vo.get("dag", 0) >= laatste
+
+
+def laatste_dag(beurten):
+    """De laatste dag die een Raadslid in het debat noemde."""
+    dagen = [0]
+    for b in berichten(beurten):
+        for m in re.finditer(r"\bdag(?:en)?\s+(\d{1,3}(?:(?:\s*,\s*|\s+en\s+|\s+t/m\s+|\s+tot en met\s+)\d{1,3})*)", b["tekst"], re.I):
+            dagen += [int(x) for x in re.findall(r"\d+", m.group(1))]
+    return max(dagen)
+
+
+def tijdsfout(tekst):
+    """Zoekt in één zin tijden van dezelfde dag die achteruit lopen. Geeft een uitleg of None."""
+    for zin in re.split(r"(?<=[.!?;])\s+", tekst or ""):
+        dag, vorige = None, None
+        for m in re.finditer(r"\bdag\s+(\d+)|\b(\d{1,2}):(\d{2})\b", zin, re.I):
+            if m.group(1):
+                if m.group(1) != dag:
+                    dag, vorige = m.group(1), None
+                continue
+            nu = int(m.group(2)) * 60 + int(m.group(3))
+            if vorige is not None and nu < vorige[0]:
+                return f"{vorige[1]} staat vóór {m.group(0)}"
+            vorige = (nu, m.group(0))
+    return None
 
 
 def schoon(d, run_id, ids, sprekers):
@@ -446,6 +489,10 @@ def schoon(d, run_id, ids, sprekers):
              for k in lijst(d.get("keten")) if is_tekst(k.get("stap")) and bewijs(k)]
     if keten:
         verdict["keten"] = keten  # extra veld: van ingreep naar symptoom, per stap met bewijs
+    dwaal = [{"bewering": x["bewering"], "van": x["van"], "waarom": x["waarom"], "bewijs": bewijs(x)}
+             for x in lijst(d.get("dwaalsporen")) if x.get("van") in sprekers and is_tekst(x.get("bewering")) and is_tekst(x.get("waarom"))]
+    if dwaal:
+        verdict["dwaalsporen"] = dwaal  # extra veld: wat de Council onderzocht en verwierp
     vt = obj(d.get("vertrouwen"))
     if type(vt.get("score")) is int and 0 <= vt["score"] <= 100 and is_tekst(vt.get("reden")):
         verdict["vertrouwen"] = {"score": vt["score"], "reden": vt["reden"]}  # extra veld: hoe zeker de Koning is
