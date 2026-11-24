@@ -18,46 +18,22 @@ from dotenv import load_dotenv
 from openai import AsyncOpenAI
 
 import raadsleden
+from koning import Koning, toespraak, vind_ids
 
 ROOT = Path(__file__).parent
 KENNISBRONNEN = ROOT / "kennisbronnen"
 ROLLEN = ("archmage", "engineer", "guardian_keeper", "historian", "oracle", "beast_master")
+POGINGEN = 5  # per Raadslid-beurt
+WACHT = 40  # seconden na een fout: gratis providers hebben vaak een limiet per minuut
 BEURTENBUDGET = 10  # spelregel: maximaal 10 Raadslid-beurten (berichten van Raadsleden) per run
 
 
-def kies_volgende(beurten, leden):
-    """De Koning leidt het debat: hij beslist wie spreekt. De kit roept deze functie op vóór elke beurt.
-    (In AI-termen heet dit deel een orchestrator.)
+def kies_volgende(beurten, leden, koning):
+    """De Koning leidt het debat: een LLM leest het debat en beslist wie spreekt (zie koning.py).
 
-    Je krijgt:
-      beurten  het debat tot nu toe, dezelfde lijst als in trace.json. Een bericht van een
-               Raadslid ziet er zo uit: {"soort": "bericht", "spreker": "engineer", "tekst": "..."}
-      leden    de Raadsleden uit raadsleden/, elk met .ROL, .NAAM en .PERSPECTIEF
-
-    Je geeft terug:
-      (rol, vraag, reden)   wie nu spreekt, welke vraag die krijgt en waarom je hem kiest
-      (None, None, reden)   het debat stopt, met de reden waarom
-    De reden komt in de trace en in de viewer. De jury leest ze: maak ze concreet.
-
-    TODO voor jullie team:
-    Nu praat iedereen om de beurt, in een vaste volgorde, ook als dat niets toevoegt. Er zijn maar
-    10 Raadslid-beurten, dus zo verspil je beurten. Laat de Koning in deze functie naar het debat
-    kijken en elke beurt bewust kiezen. Vragen om mee te starten:
-      - Wie heeft nog niet gesproken, en wiens kennis ontbreekt nog?
-      - Iemand verwijst naar een andere Rol of doet een bewering: wie kan dat controleren?
-      - Welke delen van de oorzaak (ingreep, mechanisme, verloop) zijn nog onbekend?
-      - Weet de Council genoeg? Stop dan zelf, vóór het budget op is.
-    Twee manieren (of een mix):
-      - regels in code, bv. "wie genoemd wordt, moet het toetsen";
-      - een agent: de Koning als LLM die het debat leest en (rol, vraag, reden) teruggeeft.
-        Meestal sneller gebouwd en slimmer dan regels: zie "Regels of een agent?" in de README.
+    Geeft (rol, vraag, reden, open_vragen) terug; rol None = de Koning stopt het debat.
     """
-    rondes = int(os.getenv("RONDES", "2"))
-    gesproken = sum(1 for b in beurten if b["soort"] == "bericht" and b["spreker"] in ROLLEN)
-    if gesproken >= rondes * len(leden):
-        return None, None, "vaste volgorde: alle rondes gespeeld"
-    lid = leden[gesproken % len(leden)]
-    return lid.ROL, "Geef je inbreng in hoogstens 150 woorden. Reageer op wat de anderen zeiden.", "vaste volgorde"
+    return koning.kies(beurten, leden)
 
 
 def controleer(leden):
@@ -95,15 +71,32 @@ def instructies(lid, bestanden, mcp):
         f"Je bent de {lid.NAAM}, een Raadslid in de Council of Achrona. {lid.PERSPECTIEF}\n"
         "Je debatteert met de andere Raadsleden over de oorzaak van de Desync. "
         "Baseer je alleen op je eigen Kennisbron en noem bij elke bewering de record-ID's precies zoals ze in je Kennisbron staan. Verzin nooit een ID. "
-        "Zeg het eerlijk als je iets niet weet."
+        "Zeg het eerlijk als je iets niet weet.\n"
+        "Beantwoord de vraag van de Koning eerst, in hoogstens 200 woorden. Herhaal niet wat al gezegd is. "
+        "Noem exacte dagen, getallen en namen uit je records. Scheid wat je records tonen van wat je vermoedt. "
+        "Wat een ander zegt is geen bewijs: spreek tegen als je eigen records iets anders tonen, ook als het je Belang niet uitkomt. "
+        "Verwijst een record naar een andere Rol, of kan een andere Rol iets nakijken, zeg dat dan."
     )
     if mcp:
-        tekst += "\nLees of doorzoek je Kennisbron met je tools voor je spreekt."
+        tekst += ("\nLees elke beurt eerst je volledige Kennisbron met lees_kennisbron, want je onthoudt niets van vorige beurten. "
+                  "Geef daarna alleen je afgewerkte antwoord in het Nederlands, geen plannen of gedachten.")
     elif bestanden:
         tekst += "\n\nJe Kennisbron:\n\n" + "\n\n".join(f"## {p.name}\n\n{p.read_text(encoding='utf-8')}" for p in bestanden)
     else:
         tekst += "\nJe hebt nog geen Kennisbron: zeg dat je niets kan bewijzen."
     return tekst
+
+
+def gelezen_ids(response, rol):
+    """Record-ID's van de eigen Rol in de toolresultaten: alleen om genoemde ID's te controleren, niet voor de Koning."""
+    ids = set()
+    for msg in response.messages:
+        for c in msg.contents:
+            if c.type == "function_result":
+                ids |= vind_ids(str(c.result or ""), rol)
+                for item in c.items or []:
+                    ids |= vind_ids(str(getattr(item, "text", "") or ""), rol)
+    return ids
 
 
 def tel(verbruik, model, usage):
@@ -141,6 +134,9 @@ async def run():
         bewaar("trace.json", trace)  # na elke beurt: de viewer (`uv run viewer`) toont het debat live
 
     klein = client("MODEL_KLEIN")
+    koning = Koning(BEURTENBUDGET)
+    verbruik["groot"] = koning.verbruik
+    gezien = {lid.ROL: set() for lid in leden}  # ID's die elk Raadslid echt in zijn Kennisbron zag
 
     async with AsyncExitStack() as stack:
         agents = []
@@ -158,25 +154,29 @@ async def run():
             elif not bestanden:
                 print(f"LET OP: {lid.NAAM} heeft geen Kennisbron (MCP_{lid.ROL.upper()} is leeg en kennisbronnen/{lid.ROL}/ ook).")
             for p in bestanden:  # fallback zonder MCP: welke bestanden gingen in de prompt
+                gezien[lid.ROL] |= vind_ids(p.read_text(encoding="utf-8"), lid.ROL)
                 beurt(0, lid.ROL, "bestand", bestand=f"{lid.ROL}/{p.name}")
             agents.append((lid, mcp_url, Agent(klein, instructies(lid, bestanden, mcp_url), name=lid.ROL, tools=tools)))
 
         (ROOT / "verdict.json").unlink(missing_ok=True)  # setup gelukt: geen Verdict van een vorige run laten staan
         bewaar("trace.json", trace)
         per_rol = {lid.ROL: (lid, mcp_url, agent) for lid, mcp_url, agent in agents}
-        debat, ronde = [], 1
+        debat, ronde, open_vragen = [], 1, []
         while True:
             gesproken = sum(1 for b in beurten if b["soort"] == "bericht" and b["spreker"] in per_rol)
             if gesproken >= BEURTENBUDGET:
-                rol, vraag, reden = None, None, f"Beurtenbudget op ({BEURTENBUDGET} Raadslid-beurten)"
+                rol, vraag, reden = None, None, f"Beurtenbudget op ({BEURTENBUDGET} Raadslid-beurten)"  # open_vragen blijft staan
             else:
-                rol, vraag, reden = kies_volgende(beurten, leden)
+                trace["aan_het_woord"] = "koning"
+                bewaar("trace.json", trace)
+                # in een thread: de Koning wacht op de LLM zonder de MCP-verbindingen te blokkeren
+                rol, vraag, reden, open_vragen = await asyncio.to_thread(kies_volgende, beurten, leden, koning)
             if rol is not None and rol not in per_rol:
                 sys.exit(f"kies_volgende() koos {rol!r}, maar die Rol zit niet in raadsleden/.")
             if rol is not None:
                 ronde = gesproken // len(leden) + 1
             # Elke keuze van de Koning staat in de trace: aan wie, welke vraag en waarom.
-            beurt(ronde, "koning", "routering", aan=rol, vraag=vraag, reden=reden)
+            beurt(ronde, "koning", "routering", aan=rol, vraag=vraag, reden=reden, open_vragen=open_vragen)
             print(f"\n[Koning] {'stopt' if rol is None else '→ ' + per_rol[rol][0].NAAM}: {reden}")
             if rol is None:
                 break
@@ -185,38 +185,51 @@ async def run():
             prompt = "Debat tot nu toe:\n\n" + ("\n\n".join(debat) or "(nog niets)") + f"\n\nVraag aan jou: {vraag}"
             trace["aan_het_woord"] = rol
             bewaar("trace.json", trace)
-            r = await agent.run(prompt, options=opties)
-            tel(verbruik, "klein", r.usage_details)
-            for tool, args in toolcalls(r):
-                beurt(ronde, rol, "toolcall", tool=tool, argumenten=args, pad=mcp_url)
-            beurt(ronde, rol, "bericht", tekst=r.text)
-            debat.append(f"{lid.NAAM}: {r.text}")
-            print(f"\n[ronde {ronde}] {lid.NAAM}:\n{r.text}")
+            controle, tekst = {}, ""
+            for poging in range(1, POGINGEN + 1):  # herkansing bij een fout of een antwoord zonder bron of bewijs
+                try:
+                    r = await agent.run(prompt, options=opties)
+                except Exception as e:
+                    print(f"LET OP: {lid.NAAM}, poging {poging}: {type(e).__name__}: {str(e)[-300:]}")
+                    if poging < POGINGEN:
+                        await asyncio.sleep(WACHT)
+                    continue
+                tel(verbruik, "klein", r.usage_details)
+                for tool, args in toolcalls(r):
+                    beurt(ronde, rol, "toolcall", tool=tool, argumenten=args, pad=mcp_url)
+                gezien[rol] |= gelezen_ids(r, rol)
+                tekst = r.text or tekst
+                if vind_ids(r.text, rol) & gezien[rol] or (tekst.strip() and poging >= 2):  # zonder bewijs: één herkansing
+                    break
+            if poging > 1:
+                controle["pogingen"] = poging  # eerlijk zichtbaar in de trace
+            if not tekst.strip():
+                sys.exit(f"{lid.NAAM} gaf na {POGINGEN} pogingen geen antwoord. Controleer je endpoint en model in .env.")
+            if niet_gezien := sorted(vind_ids(tekst, rol) - gezien[rol]):
+                controle["ids_niet_in_bron"] = niet_gezien
+            if not gezien[rol]:
+                controle["zonder_bron"] = True
+            beurt(ronde, rol, "bericht", tekst=tekst, **controle)
+            if controle:
+                print(f"LET OP: {lid.NAAM}: {controle}")
+            debat.append(f"{lid.NAAM}: {tekst}")
+            print(f"\n[ronde {ronde}] {lid.NAAM}:\n{tekst}")
 
     # De Koning heeft geen Rol en geen Kennisbron: hij kent alleen wat de Raadsleden inbrachten.
     trace["aan_het_woord"] = "koning"
     bewaar("trace.json", trace)
-    koning = Agent(client("MODEL_GROOT"), "Je bent de Koning van de Council of Achrona. Je hebt geen Kennisbron.", name="koning")
-    r = await koning.run(
-        options=opties,
-        messages="Debat:\n\n" + "\n\n".join(debat)
-        + "\n\nVat samen: waarover zijn de Raadsleden het eens, waarover niet, en welk bewijs (record-ID's) noemden ze?",
-    )
-    tel(verbruik, "groot", r.usage_details)
-    beurt(ronde + 1, "koning", "bericht", tekst=r.text)
-    print(f"\n[Koning]:\n{r.text}")
+    verdict, trace["geschillen"] = await asyncio.to_thread(koning.oordeel, beurten, run_id)
+    tekst = toespraak(verdict)
+    beurt(ronde + 1, "koning", "bericht", tekst=tekst)
+    print(f"\n[Koning]:\n{tekst}")
 
-    # TODO voor jullie team: laat de Council dit Verdict zelf invullen (zie schema/verdict.json).
-    verdict = {
-        "run_id": run_id,
-        "samenvatting": "TODO",
-        "oorzaak": {slot: {"bewering": None, "bewijs": []} for slot in ("ingreep", "mechanisme", "verloop")},
-        "acties": [{"actie": "TODO", "reden": "TODO"}],
-        "risicos": [{"risico": "TODO", "mitigatie": "TODO"}],
-    }
     trace["status"], trace["aan_het_woord"] = "klaar", None
     bewaar("trace.json", trace)
     bewaar("verdict.json", verdict)
+    kopie = ROOT / "runs" / run_id.replace(":", "")  # een volgende run overschrijft de root: hou elke run bij
+    kopie.mkdir(parents=True, exist_ok=True)
+    for naam in ("trace.json", "verdict.json"):
+        (kopie / naam).write_bytes((ROOT / naam).read_bytes())
 
     print(f"\nKlaar: verdict.json en trace.json geschreven (run_id {run_id}).")
     for model, v in verbruik.items():
