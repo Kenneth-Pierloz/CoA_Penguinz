@@ -122,7 +122,12 @@ def toolcalls(response):
         for c in msg.contents:
             if c.type == "function_call":
                 args = c.arguments
-                yield c.name, json.loads(args) if isinstance(args, str) and args else (args or {})
+                if isinstance(args, str):
+                    try:
+                        args = json.loads(args) if args else {}
+                    except ValueError:
+                        args = {"ruw": args}  # ongeldige JSON van het model: toch in de trace
+                yield c.name, dict(args) if isinstance(args, dict) else {"ruw": str(args)} if args else {}
 
 
 async def run():
@@ -146,92 +151,103 @@ async def run():
     verbruik["groot"] = koning.verbruik
     gezien = {lid.ROL: set() for lid in leden}  # ID's die elk Raadslid echt in zijn Kennisbron zag
 
-    async with AsyncExitStack() as stack:
-        agents = []
-        for lid in leden:
-            mcp_url = os.getenv(f"MCP_{lid.ROL.upper()}", "").strip()
-            bestanden = [] if mcp_url else kennisbron_bestanden(lid.ROL)
-            tools = []
-            if mcp_url:
-                try:
-                    tools.append(await stack.enter_async_context(MCPStreamableHTTPTool(name=f"kennisbron_{lid.ROL}", url=mcp_url)))
-                except Exception as e:
-                    sys.exit(f"MCP voor {lid.NAAM} ({mcp_url}) is onbereikbaar: {e}\n"
-                             f"Is de server al open (vanaf 10:00)? Klopt het pad /{lid.ROL}/mcp? "
-                             f"Of laat MCP_{lid.ROL.upper()} leeg om de bestanden uit kennisbronnen/{lid.ROL}/ te gebruiken.")
-            elif not bestanden:
-                print(f"LET OP: {lid.NAAM} heeft geen Kennisbron (MCP_{lid.ROL.upper()} is leeg en kennisbronnen/{lid.ROL}/ ook).")
-            for p in bestanden:  # fallback zonder MCP: welke bestanden gingen in de prompt
-                gezien[lid.ROL] |= vind_ids(p.read_text(encoding="utf-8"), lid.ROL)
-                beurt(0, lid.ROL, "bestand", bestand=f"{lid.ROL}/{p.name}")
-            agents.append((lid, mcp_url, Agent(klein, instructies(lid, bestanden, mcp_url), name=lid.ROL, tools=tools)))
+    ronde, open_vragen = 1, []
+    try:
+        async with AsyncExitStack() as stack:
+            agents = []
+            for lid in leden:
+                mcp_url = os.getenv(f"MCP_{lid.ROL.upper()}", "").strip()
+                bestanden = [] if mcp_url else kennisbron_bestanden(lid.ROL)
+                tools = []
+                if mcp_url:
+                    try:
+                        tools.append(await stack.enter_async_context(MCPStreamableHTTPTool(name=f"kennisbron_{lid.ROL}", url=mcp_url)))
+                    except Exception as e:
+                        sys.exit(f"MCP voor {lid.NAAM} ({mcp_url}) is onbereikbaar: {e}\n"
+                                 f"Is de server al open (vanaf 10:00)? Klopt het pad /{lid.ROL}/mcp? "
+                                 f"Of laat MCP_{lid.ROL.upper()} leeg om de bestanden uit kennisbronnen/{lid.ROL}/ te gebruiken.")
+                elif not bestanden:
+                    print(f"LET OP: {lid.NAAM} heeft geen Kennisbron (MCP_{lid.ROL.upper()} is leeg en kennisbronnen/{lid.ROL}/ ook).")
+                for p in bestanden:  # fallback zonder MCP: welke bestanden gingen in de prompt
+                    gezien[lid.ROL] |= vind_ids(p.read_text(encoding="utf-8"), lid.ROL)
+                    beurt(0, lid.ROL, "bestand", bestand=f"{lid.ROL}/{p.name}")
+                agents.append((lid, mcp_url, Agent(klein, instructies(lid, bestanden, mcp_url), name=lid.ROL, tools=tools)))
 
-        (ROOT / "verdict.json").unlink(missing_ok=True)  # setup gelukt: geen Verdict van een vorige run laten staan
-        bewaar("trace.json", trace)
-        per_rol = {lid.ROL: (lid, mcp_url, agent) for lid, mcp_url, agent in agents}
-        debat, ronde, open_vragen = [], 1, []
-        while True:
-            gesproken = sum(1 for b in beurten if b["soort"] == "bericht" and b["spreker"] in per_rol)
-            if gesproken >= BEURTENBUDGET:
-                rol, vraag, reden = None, None, f"Beurtenbudget op ({BEURTENBUDGET} Raadslid-beurten)"  # open_vragen blijft staan
-            elif sum(onbeantwoord(beurten).values()) >= MAX_UITVAL:
-                rol, vraag, reden = None, None, f"technische uitval: {MAX_UITVAL} keer gaf een Raadslid geen antwoord"
-            else:
-                trace["aan_het_woord"] = "koning"
-                bewaar("trace.json", trace)
-                # in een thread: de Koning wacht op de LLM zonder de MCP-verbindingen te blokkeren
-                rol, vraag, reden, open_vragen = await asyncio.to_thread(kies_volgende, beurten, leden, koning)
-            if rol is not None and rol not in per_rol:
-                sys.exit(f"kies_volgende() koos {rol!r}, maar die Rol zit niet in raadsleden/.")
-            if rol is not None:
-                ronde = gesproken // len(leden) + 1
-            # Elke keuze van de Koning staat in de trace: aan wie, welke vraag en waarom.
-            beurt(ronde, "koning", "routering", aan=rol, vraag=vraag, reden=reden, open_vragen=open_vragen)
-            print(f"\n[Koning] {'stopt' if rol is None else '→ ' + per_rol[rol][0].NAAM}: {reden}")
-            if rol is None:
-                break
-            lid, mcp_url, agent = per_rol[rol]
-            # Wie ziet wat? Hier ziet elk Raadslid het hele debat (broadcast). Ook dat is een keuze.
-            prompt = "Debat tot nu toe:\n\n" + ("\n\n".join(debat) or "(nog niets)") + f"\n\nVraag aan jou: {vraag}"
-            kort = "Laatste bijdragen uit het debat:\n\n" + ("\n\n".join(debat[-2:]) or "(nog niets)") + f"\n\nVraag aan jou: {vraag}"
-            trace["aan_het_woord"] = rol
+            (ROOT / "verdict.json").unlink(missing_ok=True)  # setup gelukt: geen Verdict van een vorige run laten staan
             bewaar("trace.json", trace)
-            controle, tekst = {}, ""
-            for poging in range(1, POGINGEN + 1):  # herkansing bij een fout of een antwoord zonder bron of bewijs
-                try:
-                    # na twee mislukte pogingen: een korter debat meesturen, want kleine modellen hebben een limiet
-                    r = await agent.run(prompt if poging < 3 else kort, options=opties)
-                except Exception as e:
-                    print(f"LET OP: {lid.NAAM}, poging {poging}: {type(e).__name__}: {str(e)[-300:]}")
-                    if poging < POGINGEN:
-                        await asyncio.sleep(WACHT)
-                    continue
-                tel(verbruik, "klein", r.usage_details)
-                for tool, args in toolcalls(r):
-                    beurt(ronde, rol, "toolcall", tool=tool, argumenten=args, pad=mcp_url)
-                gezien[rol] |= gelezen_ids(r, rol)
-                if not r.text.strip() or GEDACHTEN.search(r.text):
-                    continue  # leeg of geen afgewerkt antwoord: telt niet
-                tekst = r.text
-                if vind_ids(tekst, rol) & gezien[rol] or poging >= 2:  # zonder bewijs: één herkansing
+            per_rol = {lid.ROL: (lid, mcp_url, agent) for lid, mcp_url, agent in agents}
+            debat = []
+            while True:
+                gesproken = sum(1 for b in beurten if b["soort"] == "bericht" and b["spreker"] in per_rol)
+                if gesproken >= BEURTENBUDGET:
+                    rol, vraag, reden = None, None, f"Beurtenbudget op ({BEURTENBUDGET} Raadslid-beurten)"  # open_vragen blijft staan
+                elif sum(onbeantwoord(beurten).values()) >= MAX_UITVAL:
+                    rol, vraag, reden = None, None, f"technische uitval: {MAX_UITVAL} keer gaf een Raadslid geen antwoord"
+                else:
+                    trace["aan_het_woord"] = "koning"
+                    bewaar("trace.json", trace)
+                    # in een thread: de Koning wacht op de LLM zonder de MCP-verbindingen te blokkeren
+                    rol, vraag, reden, open_vragen = await asyncio.to_thread(kies_volgende, beurten, leden, koning)
+                if rol is not None and rol not in per_rol:
+                    sys.exit(f"kies_volgende() koos {rol!r}, maar die Rol zit niet in raadsleden/.")
+                if rol is not None:
+                    ronde = gesproken // len(leden) + 1
+                # Elke keuze van de Koning staat in de trace: aan wie, welke vraag en waarom.
+                beurt(ronde, "koning", "routering", aan=rol, vraag=vraag, reden=reden, open_vragen=open_vragen)
+                print(f"\n[Koning] {'stopt' if rol is None else '→ ' + per_rol[rol][0].NAAM}: {reden}")
+                if rol is None:
                     break
-            if poging > 1:
-                controle["pogingen"] = poging  # eerlijk zichtbaar in de trace
-            if not tekst.strip():
-                # geen bericht in de trace; de Koning ziet dat zijn vraag onbeantwoord bleef en gaat verder
-                trace.setdefault("uitval", []).append({"rol": rol, "na_beurt": len(beurten), "pogingen": poging})
+                lid, mcp_url, agent = per_rol[rol]
+                # Wie ziet wat? Hier ziet elk Raadslid het hele debat (broadcast). Ook dat is een keuze.
+                prompt = "Debat tot nu toe:\n\n" + ("\n\n".join(debat) or "(nog niets)") + f"\n\nVraag aan jou: {vraag}"
+                kort = "Laatste bijdragen uit het debat:\n\n" + ("\n\n".join(debat[-2:]) or "(nog niets)") + f"\n\nVraag aan jou: {vraag}"
+                trace["aan_het_woord"] = rol
                 bewaar("trace.json", trace)
-                print(f"LET OP: {lid.NAAM} gaf na {poging} pogingen geen bruikbaar antwoord.")
-                continue
-            if niet_gezien := sorted(vind_ids(tekst, rol) - gezien[rol]):
-                controle["ids_niet_in_bron"] = niet_gezien
-            if not gezien[rol]:
-                controle["zonder_bron"] = True
-            beurt(ronde, rol, "bericht", tekst=tekst, **controle)
-            if controle:
-                print(f"LET OP: {lid.NAAM}: {controle}")
-            debat.append(f"{lid.NAAM}: {tekst}")
-            print(f"\n[ronde {ronde}] {lid.NAAM}:\n{tekst}")
+                controle, tekst = {}, ""
+                for poging in range(1, POGINGEN + 1):  # herkansing bij een fout of een antwoord zonder bron of bewijs
+                    try:
+                        # na twee mislukte pogingen: een korter debat meesturen, want kleine modellen hebben een limiet
+                        r = await agent.run(prompt if poging < 3 else kort, options=opties)
+                    except Exception as e:
+                        trace.setdefault("mislukte_pogingen", []).append({"rol": rol, "na_beurt": len(beurten), "poging": poging, "fout": type(e).__name__})
+                        print(f"LET OP: {lid.NAAM}, poging {poging}: {type(e).__name__}: {str(e)[-300:]}")
+                        if poging < POGINGEN:
+                            await asyncio.sleep(WACHT)
+                        continue
+                    tel(verbruik, "klein", r.usage_details)
+                    for tool, args in toolcalls(r):
+                        beurt(ronde, rol, "toolcall", tool=tool, argumenten=args, pad=mcp_url)
+                    gezien[rol] |= gelezen_ids(r, rol)
+                    if not r.text.strip() or GEDACHTEN.search(r.text):
+                        trace.setdefault("mislukte_pogingen", []).append({"rol": rol, "na_beurt": len(beurten), "poging": poging, "fout": "geen afgewerkt antwoord"})
+                        continue  # leeg of geen afgewerkt antwoord: telt niet
+                    tekst = r.text
+                    if vind_ids(tekst, rol) & gezien[rol] or poging >= 2:  # zonder bewijs: één herkansing
+                        break
+                if poging > 1:
+                    controle["pogingen"] = poging  # eerlijk zichtbaar in de trace
+                if not tekst.strip():
+                    # geen bericht in de trace; de Koning ziet dat zijn vraag onbeantwoord bleef en gaat verder
+                    trace.setdefault("uitval", []).append({"rol": rol, "na_beurt": len(beurten), "pogingen": poging})
+                    bewaar("trace.json", trace)
+                    print(f"LET OP: {lid.NAAM} gaf na {poging} pogingen geen bruikbaar antwoord.")
+                    continue
+                if niet_gezien := sorted(vind_ids(tekst, rol) - gezien[rol]):
+                    controle["ids_niet_in_bron"] = niet_gezien
+                if not gezien[rol]:
+                    controle["zonder_bron"] = True
+                beurt(ronde, rol, "bericht", tekst=tekst, **controle)
+                if controle:
+                    print(f"LET OP: {lid.NAAM}: {controle}")
+                debat.append(f"{lid.NAAM}: {tekst}")
+                print(f"\n[ronde {ronde}] {lid.NAAM}:\n{tekst}")
+    except Exception as e:
+        if not any(b["soort"] == "bericht" for b in beurten):
+            raise  # nog niets gezegd: er is niets om een Verdict op te bouwen
+        print(f"LET OP: het debat stopte door een technische fout ({type(e).__name__}: {str(e)[-300:]}). De Koning oordeelt met wat er is.")
+        if not (beurten[-1]["soort"] == "routering" and beurten[-1]["aan"] is None):
+            beurt(ronde, "koning", "routering", aan=None, vraag=None, open_vragen=open_vragen,
+                  reden=f"het debat stopte door een technische fout ({type(e).__name__})")
 
     # De Koning heeft geen Rol en geen Kennisbron: hij kent alleen wat de Raadsleden inbrachten.
     trace["aan_het_woord"] = "koning"
@@ -242,6 +258,7 @@ async def run():
     beurt(ronde + 1, "koning", "bericht", tekst=tekst)
     print(f"\n[Koning]:\n{tekst}")
 
+    trace["verdict_klaar"] = True
     bewaar("verdict.json", verdict)  # eerst het Verdict: een fout bij de scores mag het niet kosten
     trace["aan_het_woord"] = None
     bewaar("trace.json", trace)
@@ -251,7 +268,7 @@ async def run():
         trace["scores"] = await asyncio.to_thread(geef_scores, beurten, leden, koning, klein_scores)
         verbruik["scores"] = klein_scores.verbruik
         for rol, s in sorted(trace["scores"]["gemiddelden"].items(), key=lambda x: -x[1]["score"]):
-            print(f"  {per_rol[rol][0].NAAM}: {s['score']}/10 ({s['aantal']} stemmen)")
+            print(f"  {rol}: {s['score']}/10 ({s['aantal']} stemmen)")
     except Exception as e:
         print(f"LET OP: geen scores ({type(e).__name__}: {e})")
     trace["status"] = "klaar"
@@ -268,7 +285,17 @@ async def run():
 
 def main():
     sys.stdout.reconfigure(encoding="utf-8")
-    asyncio.run(run())
+    try:
+        asyncio.run(run())
+    except (Exception, KeyboardInterrupt) as e:
+        # laat geen trace achter die eeuwig "bezig" lijkt
+        pad = ROOT / "trace.json"
+        trace = json.loads(pad.read_text(encoding="utf-8")) if pad.exists() else {}
+        if trace.get("status") == "bezig":
+            trace.update(status="afgebroken", aan_het_woord=None, fout=type(e).__name__)
+            pad.write_text(json.dumps(trace, indent=2, ensure_ascii=False), encoding="utf-8")
+            print("\nDe run is afgebroken: deze trace is onvolledig en niet om in te leveren. Een vorige goede run staat in runs/.")
+        raise
 
 
 if __name__ == "__main__":

@@ -39,6 +39,45 @@ def fouten(naam):
                   for e in Draft202012Validator(schema).iter_errors(data)]
 
 
+def volledigheid(verdict, trace):
+    """Geldig is nog niet volledig: wat ontbreekt er volgens de opgave of de Extra uitdagingen?"""
+    mist = []
+    if trace.get("status", "klaar") != "klaar":
+        mist.append(f"trace.json: de run is niet afgelopen (status {trace['status']})")
+    beurten = trace.get("beurten") or []
+    sprekers = {b["spreker"] for b in beurten if b.get("soort") == "bericht" and b.get("spreker") in ROLLEN}
+    lezers = {b["spreker"] for b in beurten if b.get("soort") in ("toolcall", "bestand")}
+    for rol in trace.get("raadsleden") or []:
+        if rol not in sprekers:
+            mist.append(f"trace.json: {rol} heeft niet gesproken")
+        elif rol not in lezers:
+            mist.append(f"trace.json: {rol} sprak zonder zijn Kennisbron te lezen")
+    if len(sprekers) < 3:
+        mist.append("trace.json: minder dan 3 Rollen spraken")
+    if not any(b.get("soort") == "routering" and b.get("aan") is None for b in beurten):
+        mist.append("trace.json: de Koning stopte het debat niet (routering met aan: null)")
+    if not any(b.get("soort") == "bericht" and b.get("spreker") == "koning" for b in beurten):
+        mist.append("trace.json: het slotbericht van de Koning ontbreekt")
+    if not trace.get("geschillen"):
+        mist.append("trace.json: geschillen is leeg")
+    if verdict.get("onvolledig") or "TODO" in json.dumps(verdict):
+        mist.append("verdict.json: niet echt ingevuld")
+    for slot, s in (verdict.get("oorzaak") or {}).items():
+        if not s.get("bewering"):
+            mist.append(f"verdict.json: {slot} is onbekend (null)")
+        elif "zekerheid" not in s:
+            mist.append(f"verdict.json: {slot} heeft geen zekerheid")
+    if not verdict.get("voorspelling"):
+        mist.append("verdict.json: voorspelling ontbreekt")
+    gesproken = " ".join(b.get("tekst", "") for b in beurten if b.get("soort") == "bericht" and b.get("spreker") in ROLLEN)
+    gesproken = re.sub("[‐‑‒–—―−](?=[0-9]{3})", "-", gesproken)
+    vreemd = sorted(set(re.findall("(?:ARC|ENG|GUA|HIS|ORA|BEA)-[0-9]{3}", json.dumps(verdict)))
+                    - set(re.findall("(?:ARC|ENG|GUA|HIS|ORA|BEA)-[0-9]{3}", gesproken)))
+    if vreemd:
+        mist.append(f"verdict.json: ID's die geen Raadslid in het debat noemde: {', '.join(vreemd)}")
+    return mist
+
+
 def main():
     sys.stdout.reconfigure(encoding="utf-8")
     verdict, f1 = fouten("verdict.json")
@@ -53,6 +92,11 @@ def main():
     if verdict and verdict.get("samenvatting") == "TODO":
         print("LET OP: verdict.json is nog het lege sjabloon uit de kit (TODO). Geldig, maar levert geen punten op.")
     print("GROEN: verdict.json en trace.json zijn geldig." if not alle else f"ROOD: {len(alle)} fout(en).")
+    if verdict and trace and not alle:
+        mist = volledigheid(verdict, trace)
+        for m in mist:
+            print("ONVOLLEDIG", m)
+        print("VOLLEDIG: alle onderdelen zijn ingevuld." if not mist else f"{len(mist)} onderdeel/onderdelen nog niet ingevuld.")
     sys.exit(1 if alle else 0)
 
 

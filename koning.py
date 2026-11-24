@@ -17,6 +17,8 @@ PREFIX = {"ARC": "archmage", "ENG": "engineer", "GUA": "guardian_keeper",
 # Woorden uit een andere taal: dan is het antwoord van een zwak model half vertaald.
 ANDERE_TAAL = re.compile(r"\b(the|need to|whether|because|which|und|erklären|nicht|wir)\b", re.I)
 EERST = {"oracle": "historian"}  # wie pas mag spreken nadat een andere Rol sprak
+# Een bewering die vooral zegt dat iets onbekend is, is geen besluit: twijfel hoort in zekerheid.
+GEEN_BESLUIT = re.compile(r"niet (volledig )?(vastgesteld|bewezen|aangetoond|vast te stellen|vastgelegd|bekend)|\bonbekend\b|geen raadslid|geen bewijs|staat niet vast", re.I)
 SLOTS = ("ingreep", "mechanisme", "verloop")
 # geen \b vooraan: in JSON-toolresultaten staat vaak een letterlijke "\n" vlak voor het ID
 ID_RE = re.compile(r"(?<![A-Z0-9])(ARC|ENG|GUA|HIS|ORA|BEA)-([0-9]{3})\b")
@@ -124,6 +126,8 @@ OORDEEL = """Je bent de Koning van de Council of Achrona. Het debat is klaar. St
 Regels:
 - Weeg bewijs, tel geen stemmen. Een spoor dat in het debat weerlegd is, hoort niet in de oorzaak.
 - Combineer de bronnen tot de best onderbouwde verklaring. Geen enkel Raadslid ziet de bron van een ander, dus "dat kan ik niet nakijken" weerlegt niets. Records uit verschillende bronnen die in tijd, inhoud of woordkeuze in elkaar passen, ondersteunen elkaar.
+- Jij bent rechter: verbanden leggen is jouw taak, niet die van de Raadsleden. Elk Raadslid ziet maar een stukje en zegt dus terecht dat zijn records alleen niets bewijzen. Past een regel uit de ene bron op een feit uit de andere, en klopt de volgorde in de tijd, dan is dat verband onderbouwd, ook als niemand het uitsprak.
+- Geen beter alternatief in het debat? Dan is de best passende verklaring je besluit, met een eerlijke zekerheid. Schrijf in een bewering nooit dat iets niet vastgesteld, niet bewezen of onbekend is.
 - Formuleer elke bewering als een duidelijk besluit, in hoogstens vier zinnen. Twijfel zet je in zekerheid, niet in de bewering. Is iets alleen geraden, laat het dan weg.
 - Schrijf niemand iets toe dat hij in het debat niet zelf zei.
 - Gebruik als bewijs alleen ID's uit de gegeven lijst, en alleen als dat record de bewering echt steunt. Neem per deel het sterkste bewijs, bij voorkeur uit meerdere bronnen.
@@ -152,7 +156,7 @@ CONTROLE = """Dit is je eerste Verdict:
 
 {verdict}
 
-Lees het kritisch na tegen het debat en geef het volledige, verbeterde JSON-object, met een extra veld "correcties": ["wat je verbeterde en waarom"] ([] als alles klopt). Let op:
+Lees het kritisch na tegen het debat en geef het volledige, verbeterde JSON-object, met een extra veld "correcties": ["wat je verbeterde en waarom"] ([] als alles klopt). Je verbetert en versterkt; je breekt niet af. Schrap een verband alleen als een record of Raadslid het tegenspreekt, nooit omdat geen Raadslid het uitsprak. "Dat kan ik niet nakijken", "geen bewijs van oorzaak" of "staat niet in mijn bron" is geen tegenspraak. Verlaag een zekerheid alleen om een fout die je noemt. Let op:
 1. Dagen, tijden, aantallen en tussentijden: klopt elke berekening?
 2. Staat er iets dat een Raadslid in het debat zelf tegensprak of introk? Dan weg ermee. Een middel dat volgens een Raadslid niet dient voor een actie, hoort niet in die actie.
 3. Steunt elk ID de bewering waar het bij staat, en is het belangrijkste bewijs gebruikt? Ontbreekt een regel of voorwaarde die een symptoom verklaart?
@@ -333,11 +337,46 @@ class Koning:
 
         invoer = ("Toegelaten bewijs-ID's: " + (", ".join(sorted(ids)) or "(geen)")
                   + "\n\nDebat:\n\n" + tekst_debat(beurten))
-        d, fouten = self._json(OORDEEL, invoer, keur)
+
+        def volledig(d):
+            """Strenger dan keur: vraagt om wat nog leeg is. Leeg mag alleen als het debat er echt niets over zegt."""
+            fouten = keur(d)
+            if fouten:
+                return fouten
+            for s in SLOTS:
+                if d["oorzaak"][s].get("bewering") is None:
+                    fouten.append(f"{s} is leeg: vul het in met wat het debat steunt en een lage zekerheid; alleen null als het debat er niets over zegt")
+                elif GEEN_BESLUIT.search(d["oorzaak"][s]["bewering"]):
+                    fouten.append(f"{s}: de bewering is geen besluit (\"{GEEN_BESLUIT.search(d['oorzaak'][s]['bewering']).group(0)}\"); geef de best passende verklaring en zet de twijfel in zekerheid")
+                elif s == "mechanisme" and len({i[:3] for i in d["oorzaak"][s]["bewijs"]}) < 2:
+                    fouten.append("mechanisme: steun de keten op records uit minstens twee bronnen, met de regels die de symptomen verklaren")
+                elif not isinstance(d["oorzaak"][s].get("zekerheid"), (int, float)):
+                    fouten.append(f"{s}: zekerheid ontbreekt")
+            if not d.get("voorspelling"):
+                fouten.append("voorspelling ontbreekt: leid ze af uit het patroon in het debat, of null als er geen patroon is")
+            return fouten
+
+        def vraag(tekst):
+            d, fouten = self._json(OORDEEL, tekst, volledig)
+            if d is not None and fouten:
+                try:
+                    fouten = keur(d)  # eerlijk onbekend mag, ongeldig niet
+                except (ValueError, TypeError, AttributeError, KeyError) as e:
+                    fouten = [f"ongeldige vorm: {e}"]
+            return d, fouten
+
+        d, fouten = vraag(invoer)
+        if d is None or fouten:  # tweede kans met het andere model, zodat het Verdict niet leeg blijft
+            print("LET OP: geen geldig Verdict, nieuwe poging met het andere model.")
+            vorig_model = self.model
+            self.model = "MODEL_KLEIN" if vorig_model == "MODEL_GROOT" else "MODEL_GROOT"
+            d2, f2 = vraag(invoer)
+            self.model = vorig_model
+            if d2 is not None and (d is None or not f2):
+                d, fouten = d2, f2
         if d is not None and not fouten:  # tweede blik: de Koning toetst zijn eigen Verdict aan het debat
-            beter, f2 = self._json(OORDEEL, invoer + "\n\n" + CONTROLE.replace("{verdict}", json.dumps(d, ensure_ascii=False, indent=1)), keur)
-            # alleen overnemen als het geldig is en geen deel van de oorzaak verliest
-            if beter is not None and not f2 and all(beter["oorzaak"][s].get("bewering") or not d["oorzaak"][s].get("bewering") for s in SLOTS):
+            beter, f2 = vraag(invoer + "\n\n" + CONTROLE.replace("{verdict}", json.dumps(d, ensure_ascii=False, indent=1)))
+            if beter is not None and not f2 and not verzwakt(d, beter):
                 d = beter
                 c = d.get("correcties")
                 self.correcties = [x for x in c if is_tekst(x)] if isinstance(c, list) else []
@@ -346,6 +385,24 @@ class Koning:
         if fouten:
             print("LET OP: het Verdict bevatte nog fouten en is opgeschoond: " + "; ".join(fouten))
         return schoon(d or {}, run_id, ids, sprekers)
+
+
+def verzwakt(oud, nieuw):
+    """Verloor het Verdict bij de controle een deel, veel bewijs of een duidelijk besluit? Dan blijft het oude staan."""
+    for s in SLOTS:
+        o, n = oud["oorzaak"][s], nieuw["oorzaak"][s]
+        if o.get("bewering") and not n.get("bewering"):
+            return True
+        if not o.get("bewering"):
+            continue
+        if not GEEN_BESLUIT.search(o["bewering"]) and GEEN_BESLUIT.search(n["bewering"]):
+            return True
+        if len(n.get("bewijs") or []) < 0.5 * len(o.get("bewijs") or []):
+            return True
+        zo, zn = o.get("zekerheid"), n.get("zekerheid")
+        if isinstance(zo, (int, float)) and isinstance(zn, (int, float)) and zo - zn > 0.25:
+            return True
+    return bool(oud.get("voorspelling")) and not nieuw.get("voorspelling")
 
 
 def schoon(d, run_id, ids, sprekers):
@@ -372,13 +429,19 @@ def schoon(d, run_id, ids, sprekers):
               for a in lijst(d.get("acties")) if is_tekst(a.get("actie")) and is_tekst(a.get("reden"))]
     risicos = [{"risico": r["risico"], "mitigatie": r["mitigatie"]}
                for r in lijst(d.get("risicos")) if is_tekst(r.get("risico")) and is_tekst(r.get("mitigatie"))]
+    # Nooit TODO: zonder bruikbaar antwoord van de Koning staat er eerlijk dat het niet gelukt is.
     verdict = {
         "run_id": run_id,
-        "samenvatting": d["samenvatting"] if is_tekst(d.get("samenvatting")) else "TODO",  # validate waarschuwt hierop
+        "samenvatting": d["samenvatting"] if is_tekst(d.get("samenvatting"))
+        else "De Council kwam niet tot een onderbouwd Verdict: de Koning gaf geen geldig antwoord.",
         "oorzaak": oorzaak,
-        "acties": acties or [{"actie": "TODO", "reden": "TODO"}],
-        "risicos": risicos or [{"risico": "TODO", "mitigatie": "TODO"}],
+        "acties": acties or [{"actie": "Het debat opnieuw voeren en geen onomkeerbare ingreep doen tot er een onderbouwde oorzaak is.",
+                              "reden": "Deze Council kwam niet tot een herstelplan."}],
+        "risicos": risicos or [{"risico": "Ingrijpen zonder vastgestelde oorzaak kan de toestand verergeren.",
+                                "mitigatie": "Eerst de oorzaak met bewijs vaststellen."}],
     }
+    if not (is_tekst(d.get("samenvatting")) and acties and risicos):
+        verdict["onvolledig"] = True  # extra veld: validate waarschuwt hierop
     keten = [{"stap": k["stap"], "regel": k["regel"] if is_tekst(k.get("regel")) else "", "bewijs": bewijs(k)}
              for k in lijst(d.get("keten")) if is_tekst(k.get("stap")) and bewijs(k)]
     if keten:
