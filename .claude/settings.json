@@ -1,0 +1,6 @@
+{
+  "permissions": {
+    "deny": ["Read(./.env)", "Edit(./trace.json)"],
+    "allow": ["Bash(uv run validate)", "Bash(uv run viewer)", "Bash(uv sync)"]
+  }
+}

@@ -35,6 +35,21 @@ def berichten(beurten):
     return [b for b in beurten if b["soort"] == "bericht" and b["spreker"] in PREFIX.values()]
 
 
+def onbeantwoord(beurten):
+    """Per Rol: hoe vaak een vraag van de Koning zonder bericht bleef (technische uitval)."""
+    telling, wacht = {}, None
+    for b in beurten:
+        if b["soort"] == "routering":
+            if wacht:
+                telling[wacht] = telling.get(wacht, 0) + 1
+            wacht = b["aan"]
+        elif b["soort"] == "bericht" and b["spreker"] == wacht:
+            wacht = None
+    if wacht:
+        telling[wacht] = telling.get(wacht, 0) + 1
+    return telling
+
+
 def bekende_ids(beurten):
     """ID's die als bewijs mogen dienen: genoemd door de eigen Rol en echt gezien in zijn Kennisbron."""
     ids = set()
@@ -85,6 +100,8 @@ Je hebt zelf geen Kennisbron: je weet alleen wat in het debat gezegd is. Elk Raa
 Het Verdict vraagt: ingreep (wie deed wat, wanneer), mechanisme (hoe leidt dat tot de symptomen), verloop (welk patroon in de tijd), een geordend herstelplan, risico's, en een voorspelling van de dag waarop de Desync opnieuw toeslaat.
 
 Kies elke beurt bewust:
+- Spreekt een Rol voor het eerst, vraag dan breed: welke afwijkingen staan er in de bron, met dag en tijd en de vroegste eerst; wat veranderde er vlak daarvoor, door wie en met welk doel; wat heeft die Rol zelf veranderd; wat is volgens de bron de normale werking. Pin je niet vast op één dag of tijdstip dat iemand noemde.
+- Vraag daarna gericht door: eerst de ingreep, dan het mechanisme, dan het patroon (ook wanneer het uitbleef en welke tussentijd of regel het verklaart), als laatste veilig herstel: wat moet in welke volgorde, wat mag zeker niet.
 - Laat een bewering toetsen door de Rol wiens bron ze kan bevestigen of weerleggen. Samenvallen in de tijd is nog geen oorzaak.
 - Verwijst iemand naar een andere Rol, vraag het aan die Rol.
 - Spreken Raadsleden elkaar tegen, leg het conflict scherp voor aan wie het kan beslechten.
@@ -170,7 +187,9 @@ class Koning:
     def kies(self, beurten, leden):
         rollen = [l.ROL for l in leden]
         gesproken = [b["spreker"] for b in berichten(beurten)]
-        nog_niet = [r for r in rollen if r not in gesproken]
+        uitval = onbeantwoord(beurten)
+        bruikbaar = [r for r in rollen if uitval.get(r, 0) < 2] or rollen
+        nog_niet = [r for r in bruikbaar if r not in gesproken]
         over = self.budget - len(gesproken)
         vorige = next((b.get("open_vragen", []) for b in reversed(beurten) if b["soort"] == "routering"), [])
 
@@ -180,8 +199,8 @@ class Koning:
                 if nog_niet:
                     fouten.append(f"je mag nog niet stoppen, deze Rollen spraken nog niet: {', '.join(nog_niet)}")
             else:
-                if d["rol"] not in rollen:
-                    fouten.append(f"rol moet null zijn of een van: {', '.join(rollen)}")
+                if d["rol"] not in bruikbaar:
+                    fouten.append(f"rol moet null zijn of een van: {', '.join(bruikbaar)}")
                 elif over <= len(nog_niet) and d["rol"] not in nog_niet:
                     fouten.append(f"er zijn nog {over} beurten; kies eerst uit: {', '.join(nog_niet)}")
                 if not is_tekst(d.get("vraag")):
@@ -191,11 +210,14 @@ class Koning:
             open_ = d.get("open_vragen", [])
             if not isinstance(open_, list) or not all(isinstance(v, str) for v in open_):
                 fouten.append("open_vragen moet een lijst van teksten zijn")
+            elif d.get("rol") is not None and not open_:
+                fouten.append("open_vragen is leeg terwijl het debat doorgaat: noteer wat nog onzeker is")
             return fouten
 
         invoer = ("Raadsleden:\n" + "\n".join(f"- {l.ROL} ({l.NAAM}, kijkt naar het {tijd(l)}): {l.PERSPECTIEF}".replace("het toekomst", "de toekomst")
                                               for l in sorted(leden, key=lambda l: TIJDEN.index(tijd(l))))
                   + f"\n\nBeurten over: {over} van {self.budget}. Nog niet gesproken: {', '.join(nog_niet) or 'niemand'}."
+                  + (f"\nGaf technisch geen antwoord (vraag telt niet als beurt): {', '.join(uitval)}." if uitval else "")
                   + "\nOpen vragen tot nu toe: " + json.dumps(vorige, ensure_ascii=False)
                   + "\n\nDebat:\n\n" + tekst_debat(beurten))
         d, fouten = self._json(KIES, invoer, keur)
@@ -203,7 +225,7 @@ class Koning:
             vraag = d["vraag"] if d.get("rol") else None
             return d.get("rol"), vraag, d["reden"], d.get("open_vragen", [])
         # Eerlijke terugval: regel in code, en dat staat ook zo in de trace.
-        rol = min(rollen, key=lambda r: (gesproken.count(r), rollen.index(r)))
+        rol = min(bruikbaar, key=lambda r: (gesproken.count(r), uitval.get(r, 0), rollen.index(r)))
         return (rol, "Welke records in jouw Kennisbron bevestigen of weerleggen wat tot nu toe gezegd is, en wat ontbreekt nog?",
                 f"terugval op regel (minst gesproken), want de Koning gaf geen bruikbaar antwoord: {fouten[0]}", vorige)
 

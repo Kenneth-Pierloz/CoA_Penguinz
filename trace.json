@@ -1,0 +1,40 @@
+{
+  "run_id": "2026-11-24T11:35:35+01:00_345622d4",
+  "status": "bezig",
+  "raadsleden": [
+    "archmage",
+    "beast_master",
+    "engineer",
+    "guardian_keeper",
+    "historian",
+    "oracle"
+  ],
+  "beurten": [
+    {
+      "nr": 1,
+      "ronde": 1,
+      "spreker": "koning",
+      "soort": "routering",
+      "aan": "historian",
+      "vraag": "Historicus, welke afwijkingen staan er in het archief, beginnend bij de vroegste met dag en tijd; wat veranderde er vlak daarvoor, door wie en met welk doel; wat heb je zelf veranderd in de loop der tijd; en wat is volgens de bron de normale werking van de tijdstroom in Achrona?",
+      "reden": "Ik begin bij de Historicus om de historische context en eventuele eerdere incidenten vast te stellen, conform de suggestie om de tijdlijn van verleden naar toekomst te volgen.",
+      "open_vragen": [
+        "Welke ingreep (wie, wat, wanneer) veroorzaakte de Desync?",
+        "Wat is het mechanisme waardoor deze ingreep tot de huidige symptomen leidt?",
+        "Wat is het exacte tijdsverloop en patroon van de Desync?",
+        "Wat is het geordende herstelplan en welke risico's zijn daarbij verbonden?",
+        "Op welke dag zal de Desync opnieuw toeslaan?"
+      ]
+    }
+  ],
+  "geschillen": [],
+  "verbruik": {
+    "groot": {
+      "beurten": 1,
+      "invoer": 1015,
+      "gecached": 0,
+      "uitvoer": 254
+    }
+  },
+  "aan_het_woord": "historian"
+}

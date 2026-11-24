@@ -6,6 +6,7 @@ De Koning leidt het debat in `kies_volgende()`: hij beslist wie spreekt, met wel
 import asyncio
 import json
 import os
+import re
 import sys
 import uuid
 from contextlib import AsyncExitStack
@@ -18,12 +19,15 @@ from dotenv import load_dotenv
 from openai import AsyncOpenAI
 
 import raadsleden
-from koning import Koning, toespraak, vind_ids
+from koning import Koning, onbeantwoord, toespraak, vind_ids
 
 ROOT = Path(__file__).parent
 KENNISBRONNEN = ROOT / "kennisbronnen"
 ROLLEN = ("archmage", "engineer", "guardian_keeper", "historian", "oracle", "beast_master")
 POGINGEN = 5  # per Raadslid-beurt
+MAX_UITVAL = 3  # zoveel mislukte beurten, dan stopt het debat en volgt toch een Verdict
+# Zwakke modellen geven soms hun (Engelse) gedachten in plaats van een antwoord.
+GEDACHTEN = re.compile(r"\b(we need to|we have to|let's|let me|i need to|i should|the king's question|the user)\b", re.I)
 WACHT = 40  # seconden na een fout: gratis providers hebben vaak een limiet per minuut
 BEURTENBUDGET = 10  # spelregel: maximaal 10 Raadslid-beurten (berichten van Raadsleden) per run
 
@@ -166,6 +170,8 @@ async def run():
             gesproken = sum(1 for b in beurten if b["soort"] == "bericht" and b["spreker"] in per_rol)
             if gesproken >= BEURTENBUDGET:
                 rol, vraag, reden = None, None, f"Beurtenbudget op ({BEURTENBUDGET} Raadslid-beurten)"  # open_vragen blijft staan
+            elif sum(onbeantwoord(beurten).values()) >= MAX_UITVAL:
+                rol, vraag, reden = None, None, f"technische uitval: {MAX_UITVAL} keer gaf een Raadslid geen antwoord"
             else:
                 trace["aan_het_woord"] = "koning"
                 bewaar("trace.json", trace)
@@ -183,12 +189,14 @@ async def run():
             lid, mcp_url, agent = per_rol[rol]
             # Wie ziet wat? Hier ziet elk Raadslid het hele debat (broadcast). Ook dat is een keuze.
             prompt = "Debat tot nu toe:\n\n" + ("\n\n".join(debat) or "(nog niets)") + f"\n\nVraag aan jou: {vraag}"
+            kort = "Laatste bijdragen uit het debat:\n\n" + ("\n\n".join(debat[-2:]) or "(nog niets)") + f"\n\nVraag aan jou: {vraag}"
             trace["aan_het_woord"] = rol
             bewaar("trace.json", trace)
             controle, tekst = {}, ""
             for poging in range(1, POGINGEN + 1):  # herkansing bij een fout of een antwoord zonder bron of bewijs
                 try:
-                    r = await agent.run(prompt, options=opties)
+                    # na twee mislukte pogingen: een korter debat meesturen, want kleine modellen hebben een limiet
+                    r = await agent.run(prompt if poging < 3 else kort, options=opties)
                 except Exception as e:
                     print(f"LET OP: {lid.NAAM}, poging {poging}: {type(e).__name__}: {str(e)[-300:]}")
                     if poging < POGINGEN:
@@ -198,13 +206,19 @@ async def run():
                 for tool, args in toolcalls(r):
                     beurt(ronde, rol, "toolcall", tool=tool, argumenten=args, pad=mcp_url)
                 gezien[rol] |= gelezen_ids(r, rol)
-                tekst = r.text or tekst
-                if vind_ids(r.text, rol) & gezien[rol] or (tekst.strip() and poging >= 2):  # zonder bewijs: één herkansing
+                if not r.text.strip() or GEDACHTEN.search(r.text):
+                    continue  # leeg of geen afgewerkt antwoord: telt niet
+                tekst = r.text
+                if vind_ids(tekst, rol) & gezien[rol] or poging >= 2:  # zonder bewijs: één herkansing
                     break
             if poging > 1:
                 controle["pogingen"] = poging  # eerlijk zichtbaar in de trace
             if not tekst.strip():
-                sys.exit(f"{lid.NAAM} gaf na {POGINGEN} pogingen geen antwoord. Controleer je endpoint en model in .env.")
+                # geen bericht in de trace; de Koning ziet dat zijn vraag onbeantwoord bleef en gaat verder
+                trace.setdefault("uitval", []).append({"rol": rol, "na_beurt": len(beurten), "pogingen": poging})
+                bewaar("trace.json", trace)
+                print(f"LET OP: {lid.NAAM} gaf na {poging} pogingen geen bruikbaar antwoord.")
+                continue
             if niet_gezien := sorted(vind_ids(tekst, rol) - gezien[rol]):
                 controle["ids_niet_in_bron"] = niet_gezien
             if not gezien[rol]:
