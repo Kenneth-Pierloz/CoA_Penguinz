@@ -1,167 +1,201 @@
 {
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Council Verdict",
-  "description": "Eindbeslissing van een Council: oorzaak (3 slots met bewijs), acties en risico's. Extra velden mogen.",
-  "type": "object",
-  "required": [
-    "run_id",
-    "samenvatting",
-    "oorzaak",
-    "acties",
-    "risicos"
-  ],
-  "properties": {
-    "run_id": {
-      "type": "string",
-      "minLength": 1,
-      "description": "Zelfde waarde als in trace.json van dezelfde run."
-    },
-    "samenvatting": {
-      "type": "string",
-      "minLength": 1
-    },
-    "oorzaak": {
-      "type": "object",
-      "required": [
-        "ingreep",
-        "mechanisme",
-        "verloop"
+  "run_id": "2026-11-24T15:16:38+01:00_3003faaf",
+  "samenvatting": "De Desync is het gevolg van de losse hulpslag-pol die de Engineer op dag 10 om 02:40 startte. Die pol bracht de tik van de Kroonklok uit de maat, waardoor records, het schild en het woud het eerst op dag 10 tussen 04:40 en 04:50 ontspoorden. Daarna komt de piek elke vierde dag terug tussen 04:00 en 05:00.",
+  "oorzaak": {
+    "ingreep": {
+      "bewering": "Op dag 10 om 02:40 zette de Engineer de hulpslag aan op een eigen pols in de kelder, los van de Kroonklok. Dat was de eerste wijziging in de tijdbron voor de eerste afwijking.",
+      "bewijs": [
+        "ENG-011",
+        "ENG-106",
+        "ENG-103"
       ],
-      "properties": {
-        "ingreep": {
-          "$ref": "#/$defs/slot",
-          "description": "Wie deed wat, wanneer."
-        },
-        "mechanisme": {
-          "$ref": "#/$defs/slot",
-          "description": "Hoe leidt dat tot de symptomen."
-        },
-        "verloop": {
-          "$ref": "#/$defs/slot",
-          "description": "Wat toont het patroon in de tijd."
-        }
-      }
+      "zekerheid": 0.8
     },
-    "acties": {
-      "type": "array",
-      "minItems": 1,
-      "description": "Herstelplan. De volgorde in de lijst is de uitvoeringsvolgorde.",
-      "items": {
-        "type": "object",
-        "required": [
-          "actie",
-          "reden"
-        ],
-        "properties": {
-          "actie": {
-            "type": "string",
-            "minLength": 1
-          },
-          "reden": {
-            "type": "string",
-            "minLength": 1
-          },
-          "bewijs": {
-            "$ref": "#/$defs/bewijs"
-          }
-        }
-      }
-    },
-    "risicos": {
-      "type": "array",
-      "minItems": 1,
-      "items": {
-        "type": "object",
-        "required": [
-          "risico",
-          "mitigatie"
-        ],
-        "properties": {
-          "risico": {
-            "type": "string",
-            "minLength": 1
-          },
-          "mitigatie": {
-            "type": "string",
-            "minLength": 1
-          }
-        }
-      }
-    },
-    "voorspelling": {
-      "type": "object",
-      "description": "Optioneel (Extra uitdaging): wanneer slaat de Desync opnieuw toe als niemand ingrijpt?",
-      "required": [
-        "dag",
-        "bewering",
-        "bewijs"
+    "mechanisme": {
+      "bewering": "Een tweede pols naast de Kroonklok brengt het uit de maat, en records op die losse pols gaan verloren als die pols wegvalt. Verkeer midden tussen twee tikken gaat zonder toets door, waardoor de tik verschuift. Zo verklaart de losse pols de half aangekomen berichten, de bres in het schild en de onrust in het woud.",
+      "bewijs": [
+        "HIS-109",
+        "HIS-110",
+        "GUA-104",
+        "ENG-107"
       ],
-      "properties": {
-        "dag": {
-          "type": "integer",
-          "minimum": 1
-        },
-        "bewering": {
-          "type": "string",
-          "minLength": 1
-        },
-        "bewijs": {
-          "$ref": "#/$defs/bewijs"
-        }
-      }
+      "zekerheid": 0.6
+    },
+    "verloop": {
+      "bewering": "Vanaf dag 10 kwamen de zware nachten tussen 04:00 en 05:00 elke vierde dag terug: dag 10, 14, 18, 22, 26, 30, 34, 38 en 42. Op dag 14 en dag 42, twee van die piekdagen, lagen alle veertien leylijnen laag, terwijl dag 7 binnen de marge lag.",
+      "bewijs": [
+        "BEA-113",
+        "BEA-091",
+        "BEA-092",
+        "ARC-015",
+        "ARC-028",
+        "ARC-071",
+        "ARC-084",
+        "ARC-105"
+      ],
+      "zekerheid": 0.55
     }
   },
-  "$defs": {
-    "id": {
-      "type": "string",
-      "pattern": "^(ARC|ENG|GUA|HIS|ORA|BEA)-[0-9]{3}$"
+  "acties": [
+    {
+      "actie": "De Historian maakt eerst een afschrift van het register.",
+      "reden": "Records op een losse pols gaan verloren als die pols wegvalt, dus het afschrift moet vóór het samenbrengen.",
+      "bewijs": [
+        "HIS-110"
+      ]
     },
-    "bewijs": {
-      "type": "array",
-      "items": {
-        "$ref": "#/$defs/id"
-      },
-      "uniqueItems": true
+    {
+      "actie": "De Engineer brengt de polsen daarna langzaam samen, in stappen van 0,1% met de fijnregeling.",
+      "reden": "Het herstel van de maat vraagt om langzaam samenbrengen, en de fijnregeling stuurt het tempo in die stappen.",
+      "bewijs": [
+        "HIS-110",
+        "ENG-114",
+        "ENG-061"
+      ]
     },
-    "slot": {
-      "type": "object",
-      "required": [
-        "bewering",
-        "bewijs"
-      ],
-      "properties": {
-        "bewering": {
-          "type": [
-            "string",
-            "null"
-          ],
-          "minLength": 1,
-          "description": "null = eerlijk onbekend."
-        },
-        "bewijs": {
-          "$ref": "#/$defs/bewijs"
-        },
-        "zekerheid": {
-          "type": "number",
-          "minimum": 0,
-          "maximum": 1,
-          "description": "Optioneel (Extra uitdaging): zekerheid van dit deel, 0-1."
-        }
-      },
-      "if": {
-        "properties": {
-          "bewering": {
-            "type": "string"
-          }
-        }
-      },
-      "then": {
-        "properties": {
-          "bewijs": {
-            "minItems": 1
-          }
-        }
-      }
+    {
+      "actie": "Daarna schakelt de Engineer de hulpslag op de eigen pols uit.",
+      "reden": "Zodra de polsen samenlopen en het afschrift er is, is de losse pols niet meer nodig; hij is de bron van de uit-de-maat-tik en is door de Engineer zelf gestart.",
+      "bewijs": [
+        "ENG-011",
+        "ENG-103"
+      ]
+    },
+    {
+      "actie": "De Archmage legt zijn brief ARC-106 aan de raad voor en meldt wat het net sinds dag 8 deed.",
+      "reden": "De brief over het net op eigen maat is niet in het register gemeld en spreekt de latere advisering tegen.",
+      "bewijs": [
+        "ARC-106",
+        "ARC-112"
+      ]
+    },
+    {
+      "actie": "De Guardian houdt de poortposten van 03:00 tot 06:00 bezet en controleert het record van 01:50.",
+      "reden": "De openingen van binnenuit vallen in dat uur, en het record van 01:50 is nooit nagekeken.",
+      "bewijs": [
+        "GUA-106",
+        "GUA-115"
+      ]
+    },
+    {
+      "actie": "De Beast Master blijft elke nacht tussen 04:00 en 05:00 de onrust loggen.",
+      "reden": "Zo blijft de volgende piek zichtbaar en kan het herstel getoetst worden.",
+      "bewijs": [
+        "BEA-113"
+      ]
     }
+  ],
+  "risicos": [
+    {
+      "risico": "Bij het samenbrengen van de polsen kunnen records op de losse pols verloren gaan.",
+      "mitigatie": "Maak vóór het samenbrengen een afschrift van het register."
+    },
+    {
+      "risico": "Het schild kan van binnenuit openen tussen 03:00 en 06:00, zolang de poortposten niet bezet zijn.",
+      "mitigatie": "Houd de poortposten bezet van 03:00 tot 06:00, zoals in artikel 5 staat."
+    },
+    {
+      "risico": "Als niemand ingrijpt, komt de Desync terug in de vierdaagse reeks.",
+      "mitigatie": "Zet de hulpslag op de eigen pols uit voordat dag 46 aanbreekt."
+    }
+  ],
+  "keten": [
+    {
+      "stap": "Op dag 10 om 02:40 zette de Engineer de hulpslag aan op een eigen pols, los van de Kroonklok.",
+      "regel": "Een tweede pols ernaast brengt het uit de maat.",
+      "bewijs": [
+        "ENG-011",
+        "ENG-106",
+        "HIS-109"
+      ]
+    },
+    {
+      "stap": "De hulpslag draait op die eigen pols in de kelder, en de doorvoer steeg met 38%.",
+      "regel": "De polsversterker verhoogt de doorvoer, en de hulpslag draait op een eigen pols in de kelder.",
+      "bewijs": [
+        "ENG-103",
+        "ENG-114",
+        "ENG-012"
+      ]
+    },
+    {
+      "stap": "Een record op de losse pols is alleen op die pols terug te lezen, en gaat verloren als die pols wegvalt.",
+      "regel": "Een record op een andere pols is alleen op die pols terug te lezen; valt die pols plots weg, dan is het record verloren.",
+      "bewijs": [
+        "HIS-110"
+      ]
+    },
+    {
+      "stap": "Berichten kwamen half aan in de benedenstad, en de tijdstempels liepen uit de pas met de tik van de Kroonklok.",
+      "regel": "Een record wordt geschreven op de tik waarop het binnenkomt; een pols die uit de maat loopt, verschuift die tik.",
+      "bewijs": [
+        "ENG-107",
+        "HIS-103",
+        "HIS-109"
+      ]
+    },
+    {
+      "stap": "Om 04:47 ging het schild van de benedenstad twee minuten van binnenuit open, zonder breuk.",
+      "regel": "Verkeer dat midden tussen twee tikken valt, geldt als verkeer van binnen en gaat zonder toets door.",
+      "bewijs": [
+        "GUA-111",
+        "GUA-019",
+        "GUA-104"
+      ]
+    },
+    {
+      "stap": "Om 04:40 sloegen de wolven aan, om 04:45 werd de oracle wakker en om 04:50 vluchtte de kudde.",
+      "regel": "Het symptoom valt op hetzelfde nachtuur als de verschoven tik en de bres in het schild.",
+      "bewijs": [
+        "BEA-019",
+        "BEA-020",
+        "ORA-110"
+      ]
+    }
+  ],
+  "dwaalsporen": [
+    {
+      "bewering": "De Stille Winter en een oude vloek veroorzaken het huidige ritme.",
+      "van": "historian",
+      "waarom": "De Historian zelf noemde dit een vermoeden zonder record. De Stille Winter was ritmeloos en gebeurde vóór het datanet bestond, dus hij past niet bij de vierdaagse reeks.",
+      "bewijs": [
+        "HIS-107",
+        "HIS-114"
+      ]
+    },
+    {
+      "bewering": "Hackers verstoorden de synchronisatie op dag 22.",
+      "van": "engineer",
+      "waarom": "Er is alleen drie minuten pakketverlies gemeten en daarna zijn firewallregels aangescherpt. Geen record koppelt hackers aan de storing, en de storing van dag 10 gaat er al aan vooraf.",
+      "bewijs": [
+        "ENG-026",
+        "ENG-027",
+        "ENG-011"
+      ]
+    },
+    {
+      "bewering": "De conjunctie van de Wachtsterren veroorzaakt de zware nachten.",
+      "van": "oracle",
+      "waarom": "Het record van de conjunctie op dag 33 noemt geen zware nacht, en de zware nacht viel op dag 34. Het verband blijft een vermoeden, en de bewering 'zeker' was te stellig.",
+      "bewijs": [
+        "ORA-133",
+        "ORA-134",
+        "ORA-121"
+      ]
+    }
+  ],
+  "vertrouwen": {
+    "score": 40,
+    "reden": "De eerste afwijking en de losse pols op dag 10 zijn goed gedocumenteerd, en de tijdsvolgorde klopt. De zwakste schakel is de koppeling van de vierdaagse reeks aan de losse pols, want de hulpslag heeft volgens de Engineer geen nachtschema."
+  },
+  "voorspelling": {
+    "dag": 46,
+    "bewering": "Als niemand ingrijpt, komt de volgende piek op dag 46 tussen 04:00 en 05:00, door de vierdaagse reeks van dag 10 tot en met dag 42 voort te zetten (10 + 4 × 9 = 46).",
+    "bewijs": [
+      "BEA-113",
+      "BEA-091",
+      "BEA-092",
+      "ORA-142"
+    ]
   }
 }
