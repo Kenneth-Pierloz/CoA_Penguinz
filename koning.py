@@ -102,6 +102,10 @@ Kies elke beurt bewust:
 - Kies zelf de volgorde: wie helpt de zaak nu het meest vooruit? Je hoeft de Rollen niet een voor een af te lopen; vraag gerust eerst door bij iemand die al sprak. Eén regel: de historian spreekt vóór de oracle, want het verleden komt voor de toekomst.
 - Spreekt een Rol voor het eerst, vraag dan ruim genoeg: welke afwijkingen staan er in de bron (dag en tijd, de vroegste eerst, en welk patroon), wat veranderde er vlak daarvoor en door wie, wat deed die Rol zelf, en welke regels, normen of voorwaarden in de bron verklaren wanneer zo'n afwijking ontstaat. Maak de vraag eigen aan die Rol en aan wat het debat nu nodig heeft; gebruik geen vast sjabloon. Pin je niet vast op één dag die iemand noemde.
 - Het mechanisme is het moeilijkst. Vraag naar de regel of voorwaarde achter een symptoom en leg die naast wat anderen over de oorzaak zeiden.
+- Stel één hoofdvraag met hooguit één bijvraag, samen hoogstens 80 woorden. Dat geldt ook voor een eerste vraag: kies wat nu het belangrijkst is.
+- Vraag open. Leg geen lijst met mogelijke oorzaken voor en stuur een zijspoor niet langs bij anderen. Een detail dat het Verdict niet verandert, laat je los.
+- "Heeft nog niet gesproken" is geen reden. Zeg welke bewering, leemte of tegenspraak juist deze Rol kan oplossen.
+- Ken je een ritme of patroon, vraag dan wat dat ritme kan bepalen: welke instelling, verhouding of regel past bij precies die tussentijd?
 - Laat een bewering toetsen door de Rol wiens bron ze kan bevestigen of weerleggen. Samenvallen in de tijd is nog geen oorzaak.
 - Verwijst iemand naar een andere Rol, vraag het aan die Rol. Alleen Raadsleden uit de lijst kunnen antwoorden.
 - Spreken Raadsleden elkaar tegen, leg het conflict scherp voor aan wie het kan beslechten. Noem iets alleen een tegenspraak als beide Raadsleden het zelf zeiden, en leg niemand woorden in de mond.
@@ -123,36 +127,56 @@ Regels:
 - Formuleer elke bewering als een duidelijk besluit, in hoogstens vier zinnen. Twijfel zet je in zekerheid, niet in de bewering. Is iets alleen geraden, laat het dan weg.
 - Schrijf niemand iets toe dat hij in het debat niet zelf zei.
 - Gebruik als bewijs alleen ID's uit de gegeven lijst, en alleen als dat record de bewering echt steunt. Neem per deel het sterkste bewijs, bij voorkeur uit meerdere bronnen.
+- Maak eerst de keten: van ingreep naar elk belangrijk symptoom, stap voor stap, met de regel of voorwaarde uit het debat die de stap verklaart. Gebruik die keten voor het mechanisme en neem de ID's van de regels én van de symptomen op als bewijs. Een stap zonder steun in het debat laat je weg.
 - Wees precies in de oorzaak: wie, wat, welke dag; de hele keten van ingreep naar symptomen; het ritme of patroon in de tijd met dagen en getallen.
 - Weet je een deel niet, dan bewering null en bewijs []. Gok niet.
 - acties staan in uitvoeringsvolgorde en houden rekening met voorwaarden en afhankelijkheden uit het debat. Volg een herstelprocedure als een Raadslid er een noemde. Noem wie het doet, en laat het plan niet wachten op iemand of iets dat volgens het debat niet beschikbaar is.
 - risicos gaan over wat bij herstel of bij niets doen kan mislopen, elk met een mitigatie.
 - voorspelling: dag (geheel getal) waarop de Desync opnieuw toeslaat als niemand ingrijpt, met de berekening. Geen basis in het debat? Dan null.
 - zekerheid is 0 tot 1 en eerlijk.
-- geschillen: echte tegenspraken tussen Raadsleden in dit debat, met ieders standpunt. uitkomst null en bewijs [] als het niet beslecht is. Geen tegenspraak? Dan [].
+- vertrouwen: hoe zeker je bent van het hele Verdict, als geheel getal van 0 tot 100, met een reden van één of twee zinnen: wat draagt het, en wat is de zwakste schakel? Het past bij de zekerheid per deel; een ketting is niet sterker dan haar zwakste schakel.
+- geschillen: echte tegenspraken tussen Raadsleden in dit debat, met ieders standpunt. uitkomst null en bewijs [] als het niet beslecht is. Geen tegenspraak? Dan []. "Dat staat niet in mijn bron" is geen tegenspraak. Beslecht een geschil als de records samen een antwoord geven, ook als geen Raadslid dat zelf uitsprak.
 
 Antwoord in het Nederlands met alleen dit JSON-object:
-{"samenvatting": "...",
+{"keten": [{"stap": "...", "regel": "...", "bewijs": ["ID"]}],
+ "samenvatting": "...",
  "oorzaak": {"ingreep": {"bewering": "...", "bewijs": ["ID"], "zekerheid": 0.0}, "mechanisme": {...}, "verloop": {...}},
  "acties": [{"actie": "...", "reden": "...", "bewijs": ["ID"]}],
  "risicos": [{"risico": "...", "mitigatie": "..."}],
  "voorspelling": {"dag": 1, "bewering": "...", "bewijs": ["ID"]} of null,
+ "vertrouwen": {"score": 0, "reden": "..."},
  "geschillen": [{"onderwerp": "...", "standpunten": {"<rol>": "..."}, "uitkomst": "..." of null, "bewijs": ["ID"]}]}"""
 
 
+CONTROLE = """Dit is je eerste Verdict:
+
+{verdict}
+
+Lees het kritisch na tegen het debat en geef het volledige, verbeterde JSON-object, met een extra veld "correcties": ["wat je verbeterde en waarom"] ([] als alles klopt). Let op:
+1. Dagen, tijden, aantallen en tussentijden: klopt elke berekening?
+2. Staat er iets dat een Raadslid in het debat zelf tegensprak of introk? Dan weg ermee. Een middel dat volgens een Raadslid niet dient voor een actie, hoort niet in die actie.
+3. Steunt elk ID de bewering waar het bij staat, en is het belangrijkste bewijs gebruikt? Ontbreekt een regel of voorwaarde die een symptoom verklaart?
+4. Wie deed wat: noemt het debat een dader of goedkeurder, ook in de ik-vorm, dan staat die in de ingreep.
+5. Is elke bewering een besluit, met de twijfel in zekerheid?
+6. Is het herstelplan uitvoerbaar, in de juiste volgorde, en neemt het de oorzaak weg?
+7. Is elk geschil een echte tegenspraak, en kan het met de records beslecht worden?"""
+
+
 class Koning:
-    def __init__(self, budget, vraag_llm=None):
+    def __init__(self, budget, vraag_llm=None, model="MODEL_GROOT"):
+        self.model = model  # naam van de omgevingsvariabele
         self.budget = budget
         self.verbruik = {"beurten": 0, "invoer": 0, "gecached": 0, "uitvoer": 0}
         self.vraag_llm = vraag_llm or self._llm  # vervangbaar, om zonder API te testen
         self._client = None
+        self.correcties = []  # wat de controleronde aan het Verdict verbeterde
 
     def _llm(self, messages):
         if self._client is None:
             self._client = OpenAI(base_url=os.environ["OPENAI_BASE_URL"], api_key=os.environ["OPENAI_API_KEY"],
                                   max_retries=8, timeout=180)
         extra = {"reasoning_effort": os.environ["REASONING"]} if os.getenv("REASONING") else {}
-        r = self._client.chat.completions.create(model=os.environ["MODEL_GROOT"], messages=messages, **extra)
+        r = self._client.chat.completions.create(model=os.environ[self.model], messages=messages, **extra)
         v = self.verbruik
         v["beurten"] += 1
         if r.usage:
@@ -211,6 +235,8 @@ class Koning:
                     fouten.append(f"{rol} sprak al {gesproken.count(rol)} keer; kies een andere Rol, stop, of noem de echte tegenspraak in 'tegenspraak'")
                 if any(difflib.SequenceMatcher(None, vraag.lower(), v.lower()).ratio() > 0.75 for r, v in gesteld if r == rol):
                     fouten.append(f"deze vraag lijkt te sterk op een eerdere vraag aan {rol}")
+                if len(vraag) > 650 or vraag.count("?") > 3:
+                    fouten.append("de vraag is te lang: één hoofdvraag met hooguit één bijvraag, samen hoogstens 80 woorden")
                 if len(vorige) - len(open_) > 3:
                     fouten.append(f"open_vragen kromp van {len(vorige)} naar {len(open_)}; hou onbeantwoorde vragen vast")
             if ANDERE_TAAL.search(vraag + " " + d.get("reden", "")):
@@ -291,6 +317,9 @@ class Koning:
                     if not all(is_tekst(x.get(v)) for v in velden):
                         fouten.append(f"{naam}: elk item heeft {' en '.join(velden)} nodig")
                     bewijs(naam, x)
+            vt = d.get("vertrouwen") or {}
+            if type(vt.get("score")) is not int or not 0 <= vt["score"] <= 100 or not is_tekst(vt.get("reden")):
+                fouten.append("vertrouwen: score (geheel getal 0-100) en reden zijn nodig")
             if d.get("voorspelling"):
                 bewijs("voorspelling", d["voorspelling"], verplicht=True)
                 dag = d["voorspelling"].get("dag")
@@ -302,8 +331,18 @@ class Koning:
                     fouten.append("geschillen: standpunten alleen van Raadsleden die spraken (rolnaam als sleutel)")
             return fouten
 
-        d, fouten = self._json(OORDEEL, "Toegelaten bewijs-ID's: " + (", ".join(sorted(ids)) or "(geen)")
-                               + "\n\nDebat:\n\n" + tekst_debat(beurten), keur)
+        invoer = ("Toegelaten bewijs-ID's: " + (", ".join(sorted(ids)) or "(geen)")
+                  + "\n\nDebat:\n\n" + tekst_debat(beurten))
+        d, fouten = self._json(OORDEEL, invoer, keur)
+        if d is not None and not fouten:  # tweede blik: de Koning toetst zijn eigen Verdict aan het debat
+            beter, f2 = self._json(OORDEEL, invoer + "\n\n" + CONTROLE.replace("{verdict}", json.dumps(d, ensure_ascii=False, indent=1)), keur)
+            # alleen overnemen als het geldig is en geen deel van de oorzaak verliest
+            if beter is not None and not f2 and all(beter["oorzaak"][s].get("bewering") or not d["oorzaak"][s].get("bewering") for s in SLOTS):
+                d = beter
+                c = d.get("correcties")
+                self.correcties = [x for x in c if is_tekst(x)] if isinstance(c, list) else []
+            else:
+                print("LET OP: de controleronde gaf geen bruikbaar Verdict; het eerste Verdict blijft staan.")
         if fouten:
             print("LET OP: het Verdict bevatte nog fouten en is opgeschoond: " + "; ".join(fouten))
         return schoon(d or {}, run_id, ids, sprekers)
@@ -340,6 +379,13 @@ def schoon(d, run_id, ids, sprekers):
         "acties": acties or [{"actie": "TODO", "reden": "TODO"}],
         "risicos": risicos or [{"risico": "TODO", "mitigatie": "TODO"}],
     }
+    keten = [{"stap": k["stap"], "regel": k["regel"] if is_tekst(k.get("regel")) else "", "bewijs": bewijs(k)}
+             for k in lijst(d.get("keten")) if is_tekst(k.get("stap")) and bewijs(k)]
+    if keten:
+        verdict["keten"] = keten  # extra veld: van ingreep naar symptoom, per stap met bewijs
+    vt = obj(d.get("vertrouwen"))
+    if type(vt.get("score")) is int and 0 <= vt["score"] <= 100 and is_tekst(vt.get("reden")):
+        verdict["vertrouwen"] = {"score": vt["score"], "reden": vt["reden"]}  # extra veld: hoe zeker de Koning is
     v = obj(d.get("voorspelling"))
     if type(v.get("dag")) is int and v["dag"] >= 1 and is_tekst(v.get("bewering")) and bewijs(v):
         verdict["voorspelling"] = {"dag": v["dag"], "bewering": v["bewering"], "bewijs": bewijs(v)}
@@ -360,4 +406,6 @@ def toespraak(verdict):
     for s in SLOTS:
         x = verdict["oorzaak"][s]
         regels.append(f"**{s.capitalize()}**: {x['bewering'] or 'onbekend'} {', '.join(x['bewijs'])}".strip())
+    if verdict.get("vertrouwen"):
+        regels.append(f"**Vertrouwen**: {verdict['vertrouwen']['score']}%. {verdict['vertrouwen']['reden']}")
     return "\n\n".join(regels)

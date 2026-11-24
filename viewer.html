@@ -56,6 +56,20 @@
   .slot b { display: block; font-size: 12px; color: var(--zacht); text-transform: uppercase; letter-spacing: .05em; }
   .leeg { color: var(--zacht); font-style: italic; }
   ol { padding-left: 18px; margin: 4px 0; font-size: 13px; }
+  .score { margin: 6px 0; font-size: 13px; }
+  .score summary { cursor: pointer; display: grid; grid-template-columns: 12px 112px 1fr auto; gap: 8px; align-items: center; list-style: none; }
+  .score summary::-webkit-details-marker { display: none; }
+  .score .spoor { height: 8px; border-radius: 4px; background: var(--lijn); overflow: hidden; }
+  .score .spoor span { display: block; height: 100%; background: var(--kleur); }
+  .score b.punt { font-variant-numeric: tabular-nums; }
+  .score .stem { margin: 4px 0 4px 20px; color: var(--zacht); overflow-wrap: anywhere; }
+  .vertrouwen { border: 1px solid var(--kleur); border-radius: 8px; padding: 8px 10px; margin-bottom: 10px; font-size: 13px; }
+  .vertrouwen .kop { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; font-weight: 650; }
+  .vertrouwen .kop b { font-size: 20px; color: var(--kleur); font-variant-numeric: tabular-nums; }
+  .vertrouwen .spoor { height: 8px; border-radius: 4px; background: var(--lijn); overflow: hidden; margin: 4px 0 6px; }
+  .vertrouwen .spoor span { display: block; height: 100%; background: var(--kleur); }
+  .vertrouwen .reden { color: var(--zacht); overflow-wrap: anywhere; }
+  .badge { font-weight: 650; color: var(--kleur); }
   .melding { padding: 40px 16px; text-align: center; color: var(--zacht); }
 </style>
 </head>
@@ -69,6 +83,7 @@
   <div id="debat"><p class="melding">Nog geen <code>trace.json</code>. Start je Council met <code>uv run council</code>; het debat verschijnt hier live.</p></div>
   <aside>
     <section><h2>Raadsleden</h2><div id="leden"></div></section>
+    <section id="scoresectie" hidden><h2>Feedbackscores</h2><div id="scores"></div></section>
     <section><h2>Spelregels</h2><div id="checks"></div></section>
     <section><h2>Verbruik</h2><div id="verbruik"></div></section>
     <section><h2>Council Verdict</h2><div id="verdict"><span class="leeg">nog geen verdict.json</span></div></section>
@@ -83,6 +98,7 @@ const ID_RE = /\b(ARC|ENG|GUA|HIS|ORA|BEA)([-\u2010-\u2015\u2212])(\d{3})\b/g;
 let vorige = "";
 
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const punt = n => Number(n).toLocaleString("nl-BE", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 const kleur = rol => `var(--${NAMEN[rol] ? rol : "koning"})`;
 
 function opmaak(tekst) {
@@ -165,8 +181,24 @@ function render(trace, verdict) {
   // Raadsleden
   document.getElementById("leden").innerHTML = [...(trace.raadsleden || []), "koning"].map(r => {
     const t = telling[r] || { berichten: 0, tools: 0, ids: new Set() };
-    return `<div class="lid" style="--kleur:${kleur(r)}"><span class="stip"></span><span>${esc(NAMEN[r] || r)}</span><span class="getal">${t.berichten} ber · ${t.tools} bron · ${t.ids.size} ID's</span></div>`;
+    const sc = trace.scores?.gemiddelden?.[r];
+    const badge = sc ? ` <span class="badge" title="Gemiddelde van ${esc(sc.aantal)} stemmen">★ ${esc(punt(sc.score))}</span>` : "";
+    return `<div class="lid" style="--kleur:${kleur(r)}"><span class="stip"></span><span>${esc(NAMEN[r] || r)}${badge}</span><span class="getal">${t.berichten} ber · ${t.tools} bron · ${t.ids.size} ID's</span></div>`;
   }).join("");
+
+  // Feedbackscores: gemiddelde van alle stemmen (andere Raadsleden + Koning), klik open voor de feedback
+  const sco = trace.scores;
+  document.getElementById("scoresectie").hidden = !sco;
+  if (sco) {
+    const rij = Object.entries(sco.gemiddelden || {}).sort((a, b) => b[1].score - a[1].score);
+    const zonder = (sco.zonder_stem || []).map(r => NAMEN[r] || r).join(", ");
+    document.getElementById("scores").innerHTML = rij.map(([r, g]) =>
+      `<details class="score" style="--kleur:${kleur(r)}"><summary title="Toon de feedback"><span class="stip"></span><span>${esc(NAMEN[r] || r)}</span><span class="spoor"><span style="width:${Math.max(0, Math.min(100, Number(g.score) * 10 || 0))}%"></span></span><b class="punt">${esc(punt(g.score))}</b></summary>`
+      + (sco.stemmen || []).filter(s => s.aan === r).map(s =>
+        `<div class="stem"><b style="color:${kleur(s.van)}">${esc(NAMEN[s.van] || s.van)}</b> gaf ${esc(s.score)}: ${opmaak(s.feedback)}</div>`).join("")
+      + `</details>`).join("")
+      + `<div class="getal">Gemiddelde op 10 van de andere Raadsleden en de Koning. Klik voor de feedback.${zonder ? " Geen geldige stem van: " + esc(zonder) + "." : ""}</div>`;
+  }
 
   // Spelregels
   const zonderBron = (trace.raadsleden || []).filter(r => !(telling[r]?.tools));
@@ -192,12 +224,18 @@ function render(trace, verdict) {
   if (!verdict || verdict.run_id !== trace.run_id) {
     vd.innerHTML = `<span class="leeg">${verdict ? "verdict.json hoort bij een andere run" : bezig ? "komt na de Koning" : "geen verdict.json"}</span>`;
   } else {
-    const slot = (naam, s) => `<div class="slot"><b>${naam}</b>${s?.bewering ? opmaak(s.bewering) + " " + (s.bewijs || []).map(i => opmaak(i)).join(" ") : '<span class="leeg">onbekend (null)</span>'}</div>`;
+    const zeker = s => typeof s?.zekerheid === "number" ? ` · zekerheid ${Math.round(s.zekerheid * 100)}%` : "";
+    const vt = verdict.vertrouwen, pct = Math.max(0, Math.min(100, Number(vt?.score) || 0));
+    const vtKleur = pct >= 70 ? "var(--ok)" : pct >= 40 ? "var(--waarschuwing)" : "var(--fout)";
+    const vertrouwen = vt ? `<div class="vertrouwen" style="--kleur:${vtKleur}"><div class="kop"><span>Vertrouwen van de Koning</span><b>${pct}%</b></div><div class="spoor"><span style="width:${pct}%"></span></div><div class="reden">${opmaak(vt.reden)}</div></div>` : "";
+    const vs = verdict.voorspelling;
+    const slot = (naam, s) => `<div class="slot"><b>${naam}${s?.bewering ? zeker(s) : ""}</b>${s?.bewering ? opmaak(s.bewering) + " " + (s.bewijs || []).map(i => opmaak(i)).join(" ") : '<span class="leeg">onbekend (null)</span>'}</div>`;
     const o = verdict.oorzaak || {};
-    vd.innerHTML = `<div class="slot"><b>Samenvatting</b>${verdict.samenvatting === "TODO" ? '<span class="leeg">TODO</span>' : opmaak(verdict.samenvatting)}</div>`
+    vd.innerHTML = vertrouwen + `<div class="slot"><b>Samenvatting</b>${verdict.samenvatting === "TODO" ? '<span class="leeg">TODO</span>' : opmaak(verdict.samenvatting)}</div>`
       + slot("Ingreep", o.ingreep) + slot("Mechanisme", o.mechanisme) + slot("Verloop", o.verloop)
       + `<div class="slot"><b>Herstelplan</b><ol>${(verdict.acties || []).map(a => `<li>${opmaak(a.actie)}</li>`).join("")}</ol></div>`
-      + `<div class="slot"><b>Risico's</b><ol>${(verdict.risicos || []).map(r => `<li>${opmaak(r.risico)}</li>`).join("")}</ol></div>`;
+      + `<div class="slot"><b>Risico's</b><ol>${(verdict.risicos || []).map(r => `<li>${opmaak(r.risico)}</li>`).join("")}</ol></div>`
+      + (vs ? `<div class="slot"><b>Voorspelling · dag ${esc(vs.dag)}</b>${opmaak(vs.bewering)} ${(vs.bewijs || []).map(i => opmaak(i)).join(" ")}</div>` : "");
   }
 }
 

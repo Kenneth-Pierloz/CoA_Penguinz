@@ -20,6 +20,7 @@ from openai import AsyncOpenAI
 
 import raadsleden
 from koning import Koning, onbeantwoord, toespraak, vind_ids
+from scores import geef_scores
 
 ROOT = Path(__file__).parent
 KENNISBRONNEN = ROOT / "kennisbronnen"
@@ -80,7 +81,9 @@ def instructies(lid, bestanden, mcp):
         "Noem exacte dagen, getallen en namen uit je records. Scheid wat je records tonen van wat je vermoedt. "
         "Wat een ander zegt is geen bewijs: spreek tegen als je eigen records iets anders tonen, ook als het je Belang niet uitkomt. "
         "Noem ook de regels, normen, voorwaarden of procedures uit je bron die bij de vraag horen. "
-        "Je ziet de bron van anderen niet en dat is normaal: meld dat niet. Verwijs hoogstens in één zin naar de Rol die verder kan helpen."
+        "Is een record jouw eigen logboek, brief of notitie, zeg dan eerlijk in de ik-vorm wat je zelf deed. "
+        "Je ziet de bron van anderen niet en dat is normaal: meld dat niet. Verwijs hoogstens in één zin naar een Raadslid dat verder kan helpen. "
+        f"Er zijn alleen deze Raadsleden: {', '.join(l.NAAM for l in raadsleden.alle())}."
     )
     if mcp:
         tekst += ("\nLees elke beurt eerst je volledige Kennisbron met lees_kennisbron, want je onthoudt niets van vorige beurten. "
@@ -234,13 +237,25 @@ async def run():
     trace["aan_het_woord"] = "koning"
     bewaar("trace.json", trace)
     verdict, trace["geschillen"] = await asyncio.to_thread(koning.oordeel, beurten, run_id)
+    trace["correcties_koning"] = koning.correcties
     tekst = toespraak(verdict)
     beurt(ronde + 1, "koning", "bericht", tekst=tekst)
     print(f"\n[Koning]:\n{tekst}")
 
-    trace["status"], trace["aan_het_woord"] = "klaar", None
+    bewaar("verdict.json", verdict)  # eerst het Verdict: een fout bij de scores mag het niet kosten
+    trace["aan_het_woord"] = None
     bewaar("trace.json", trace)
-    bewaar("verdict.json", verdict)
+    print("\nDe Raadsleden en de Koning geven elkaar scores...")
+    klein_scores = Koning(BEURTENBUDGET, model="MODEL_KLEIN")
+    try:
+        trace["scores"] = await asyncio.to_thread(geef_scores, beurten, leden, koning, klein_scores)
+        verbruik["scores"] = klein_scores.verbruik
+        for rol, s in sorted(trace["scores"]["gemiddelden"].items(), key=lambda x: -x[1]["score"]):
+            print(f"  {per_rol[rol][0].NAAM}: {s['score']}/10 ({s['aantal']} stemmen)")
+    except Exception as e:
+        print(f"LET OP: geen scores ({type(e).__name__}: {e})")
+    trace["status"] = "klaar"
+    bewaar("trace.json", trace)
     kopie = ROOT / "runs" / run_id.replace(":", "")  # een volgende run overschrijft de root: hou elke run bij
     kopie.mkdir(parents=True, exist_ok=True)
     for naam in ("trace.json", "verdict.json"):
