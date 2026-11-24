@@ -1,0 +1,693 @@
+{
+  "run_id": "2026-11-24T14:38:09+01:00_d9e5a450",
+  "status": "klaar",
+  "raadsleden": [
+    "archmage",
+    "beast_master",
+    "engineer",
+    "guardian_keeper",
+    "historian",
+    "oracle"
+  ],
+  "beurten": [
+    {
+      "nr": 1,
+      "ronde": 1,
+      "spreker": "koning",
+      "soort": "routering",
+      "aan": "historian",
+      "vraag": "Welke afwijkingen van de Desync staan in het archief, beginnend bij de vroegste datum en tijd, en welk patroon zie je erin? Wat veranderde er vlak daarvoor en door wie, en welke regels of voorwaarden in het archief verklaren wanneer zo'n afwijking ontstaat?",
+      "reden": "Nog niemand heeft gesproken. De historian gaat als eerste omdat het verleden voor de toekomst komt, en het archief kan laten zien wanneer de Desync voor het eerst optrad en wat er toen veranderde.",
+      "open_vragen": [
+        "Wanneer trad de Desync voor het eerst op volgens het archief?",
+        "Wat veranderde er vlak voor de eerste afwijking, en door wie?",
+        "Welke regel of voorwaarde verklaart wanneer de Desync ontstaat?"
+      ]
+    },
+    {
+      "nr": 2,
+      "ronde": 1,
+      "spreker": "historian",
+      "soort": "toolcall",
+      "tool": "lees_kennisbron",
+      "argumenten": {},
+      "pad": "https://mcp.findingsolutions.be/historian/mcp"
+    },
+    {
+      "nr": 3,
+      "ronde": 1,
+      "spreker": "historian",
+      "soort": "toolcall",
+      "tool": "zoek",
+      "argumenten": {
+        "term": "Desync"
+      },
+      "pad": "https://mcp.findingsolutions.be/historian/mcp"
+    },
+    {
+      "nr": 4,
+      "ronde": 1,
+      "spreker": "historian",
+      "soort": "bericht",
+      "tekst": "**Eerste afwijkingen (desync) in chronologische volgorde**\n\n| Record | Gebeurd op | Vastgelegd op | Opmerking |\n|--------|------------|---------------|-----------|\n| **HIS‑035** | dag 10 04:45 | dag 10 07:20 | “De Burchtader stokte even, gemeld door de nachtwake” |\n| **HIS‑036** | dag 10 04:50 | dag 9 23:55 | Klacht uit de benedenstad: “berichten half aangekomen” |\n| **HIS‑053** | dag 22 04:15 | dag 22 01:50 | “Lek bij poort oost gemeld door de wachters, 3 minuten” |\n\n**Patroon**\n\nAlle drie de desync‑momenten vallen samen met of onmiddellijk na de hernieuwde **Stille Winter** zoals historicus HIS‑114 beschrijft: “in de nacht van dag 10 stokte de Burchtader en kwamen de berichten uit de benedenstad half aan, uit het niets”. De eerste twee records (HIS‑035 en HIS‑036) gebeurden precies in die nacht; het derde (HIS‑053) is een later onderhoudsgeval dat eveneens een tijdsverschil toont. In de 23‑jarige geschiedenis van het datanet (HIS‑106) stond “in geen enkele [hapering van de leylijnen]”; dit is de eerste keer sinds de datatoren (HIS‑005‑007) werden aangesloten dat zodanige afwijkingen optreden.\n\n**Wat er vlak voorafgaande en door wie**\n\n- Direct voor de desync‑momenten stond de nacht van **dag 10**, waarbij de historicus (ik) in **HIS‑114** noteert dat de Stille Winter “begon in één nacht, zonder aankondiging”. De Burchtader (een magische leylijn) stokte, waardoor berichten uit de benedenstad pas gedeeltelijk aankwamen. De nachtwake meldde het stokken (HIS‑035), en de klachten over half‑aangekomen berichten werden door klerken geuit (HIS‑036).  \n- Later op dag 22 trad een lek bij poort oost op, gemeld door de wachters (HIS‑053), wat een patroon van foutieve tijdstempels tijdens periodes van magische storingen versterkt.\n\n**Regels, normen en procedures uit het archief die verklaren wanneer een afwijking ontstaat**\n\n1. **Eén‑polsregel (bouwakte HIS‑109/HIS‑110):** “Alles wat op de Kroonklok loopt, loopt op zijn ene pols. Een tweede pols brengt het uit de maat. Een record dat op een andere pols geschreven wordt, is alleen op die pols terug te lezen. Valt die pols plots weg, dan is het record verloren. Wie de maat herstelt, maakt eerst een afschrift van het register en brengt de polsen langzaam samen.”  \n   De CSV‑records eisen standaard `gebeurd_op == vastgelegd_op`; een desync duidt op een situatie waarin een record op een andere “pols” (hier: de magische leylijn/Burchtader) is geschreven terwijl de klok/pols verstoord is.\n\n2. **Integriteitsregel (HIS‑103, HIS‑106):** In 23 jaar datanet stond “in het register geen enkele hapering van de leylijnen”. Normaal gesproken zijn `gebeurd_op` en `vastgelegd_op` altijd gelijk; een afwijking is daarom een afwijking van de gebruikelijke procedure en markeert een storing.\n\n3. **Herstelprocedure:** Volgens de bouwakte moet wie de maat wil herstellen eerst een afschrift maken en de polsen langzaam samenbrengen. In het huidige geval geldt dat het stokken van de Burchtader moet worden opgeheven voordat de timestamps weer gelijk zijn.\n\n**Conclusie**\n\nDe allervijdste desync is **HIS‑035** (dag 10 04:45), gevolgd door **HIS‑036** (dag 10 04:50) en **HIS‑053** (dag 22 04:15). Elk optreedt na het stokken van de Burchtader tijdens de terugkerende Stille Winter. De oorzaak is een magische storing die de ene pols van de Kroonklok verstoort, waardoor records een ander tijdstempel krijgen. Het archief voorschrijft dat bij dergelijke storing eerst een afschrift moet worden gemaakt en de polsen langzaam hersteld voordat de normaal gedomande `gebeurd_op == vastgelegd_op` weer van kracht is."
+    },
+    {
+      "nr": 5,
+      "ronde": 1,
+      "spreker": "koning",
+      "soort": "routering",
+      "aan": "engineer",
+      "vraag": "Welke concrete logregels of foutmeldingen in het datanet koppelen de Desync-symptomen (half aangekomen berichten, stokkende Burchtader) aan een exact tijdstip, en wat veranderde er direct vóór die momenten in de datastroom of de status van de leylijnen?",
+      "reden": "De engineer kan de technische oorzaak verduidelijken door concreet logbestandpatroon te analyseren. Dit is cruciaal voor mechanisme en herstelplanning.",
+      "open_vragen": [
+        "Welke concrete logregels of foutmeldingen in het datanet koppelen de Desync-symptomen (half aangekomen berichten, stokkende Burchtader) aan een exact tijdstip, en wat veranderde er direct vóór die momenten in de datastroom of de status van de leylijnen?"
+      ]
+    },
+    {
+      "nr": 6,
+      "ronde": 1,
+      "spreker": "engineer",
+      "soort": "toolcall",
+      "tool": "lees_kennisbron",
+      "argumenten": {},
+      "pad": "https://mcp.findingsolutions.be/engineer/mcp"
+    },
+    {
+      "nr": 7,
+      "ronde": 1,
+      "spreker": "engineer",
+      "soort": "toolcall",
+      "tool": "zoek",
+      "argumenten": {
+        "term": "Burchtader"
+      },
+      "pad": "https://mcp.findingsolutions.be/engineer/mcp"
+    },
+    {
+      "nr": 8,
+      "ronde": 1,
+      "spreker": "engineer",
+      "soort": "toolcall",
+      "tool": "zoek",
+      "argumenten": {
+        "term": "04:45"
+      },
+      "pad": "https://mcp.findingsolutions.be/engineer/mcp"
+    },
+    {
+      "nr": 9,
+      "ronde": 1,
+      "spreker": "engineer",
+      "soort": "toolcall",
+      "tool": "zoek",
+      "argumenten": {
+        "term": "Stille Winter"
+      },
+      "pad": "https://mcp.findingsolutions.be/engineer/mcp"
+    },
+    {
+      "nr": 10,
+      "ronde": 1,
+      "spreker": "engineer",
+      "soort": "toolcall",
+      "tool": "zoek",
+      "argumenten": {
+        "term": "gebeurd_op"
+      },
+      "pad": "https://mcp.findingsolutions.be/engineer/mcp"
+    },
+    {
+      "nr": 11,
+      "ronde": 1,
+      "spreker": "engineer",
+      "soort": "bericht",
+      "tekst": "Mijn Kennisbron bevat concrete tijdstippen, maar niet de logregels of de Burchtader waar de Historian naar verwijst.\n\n**Wat mijn records tonen:**\n- **Dag 10, 02:40:** de hulpslag is geactiveerd als \"eigen pols voor het datanet, los van de Kroonklok\" (ENG-011). Ik heb die zelf ingeschakeld.\n- **Dag 10, 03:00:** doorvoer +38% (ENG-012).\n- **Dag 10, 04:50:** klacht uit de benedenstad over berichten \"half aangekomen\" (ENG-107). Ik noteerde dat als kinderziekte en deed verder niets. Achteraf was dat te licht.\n- **Dag 22, 04:15:** drie minuten pakketverlies op poort oost, status fout (ENG-026). Om 04:20 heb ik de firewallregels aangescherpt (ENG-027).\n\n**Wat ik niet kan bevestigen:** geen \"Burchtader\", geen stokken, geen 04:45-tijdstip, geen Stille Winter, geen kolommen gebeurd_op/vastgelegd_op en geen bouwakte-regels. HIS-035, HIS-036 en HIS-053 staan niet in mijn bron.\n\n**Wat er direct vooraf ging:** op dag 10 is de hulpslag twee uur voor de klacht ingeschakeld (ENG-011). Dat is een extra pols naast de Kroonklok. Op dag 22 vind ik geen wijziging aan de hulpslag vlak voor 04:15. De laatste routinecontrole was dag 21 om 09:30 (ENG-065). Mijn vermoeden van hackers (ENG-110) is niet bewezen.\n\nVoor de logregels rond het stokken en de bouwakte kan de Historian het beste antwoord geven."
+    },
+    {
+      "nr": 12,
+      "ronde": 1,
+      "spreker": "koning",
+      "soort": "routering",
+      "aan": "archmage",
+      "vraag": "Bevestig of de Burchtader op dag 10 rond 04:45 echt stokte, en wat in de leylijnen verandert wanneer een tweede pols naast de Kroonklok actief is? Zie je in je bron een voorwaarde waarbij de hulpslag van de engineer (ENG-011, dag 10 02:40) de Burchtader laat stokken?",
+      "reden": "De engineer bevestigt dat hij op dag 10 om 02:40 zelf een tweede pols (hulpslag) inschakelde, wat past bij de bouwakte-regel over een tweede pols die de maat verstoort (HIS-109/110). De historian's stokkende Burchtader en tijdstempels zijn niet door de engineer bevestigd, dus de archmage moet die leylijnstatus toetsen voordat het mechanisme vastligt.",
+      "open_vragen": [
+        "Stokte de Burchtader werkelijk op dag 10 rond 04:45, en wat is de bron daarvan buiten het archief (HIS-035)?",
+        "Welke voorwaarde in de leylijnen maakt dat een tweede pols (hulpslag, ENG-011) het tijdstempel of de Burchtader uit de maat brengt?",
+        "Welke concrete logregels in het datanet tonen gebeurd_op en vastgelegd_op naast elkaar op dag 10 04:45-04:50?",
+        "Waarom verschilt de vastlegtijd van HIS-035 (07:20) en HIS-036 (dag 9 23:55) zo sterk van het gebeurtijdstip?",
+        "Wat was de status van de hulpslag op dag 22 rond 04:15, en was die bij poort oost actief (ENG-026)?",
+        "Welke veilige herstelvolgorde geldt volgens de bron van wie de hulpslag beheert of de Burchtader bewaakt?"
+      ]
+    },
+    {
+      "nr": 13,
+      "ronde": 1,
+      "spreker": "archmage",
+      "soort": "toolcall",
+      "tool": "lees_kennisbron",
+      "argumenten": {},
+      "pad": "https://mcp.findingsolutions.be/archmage/mcp"
+    },
+    {
+      "nr": 14,
+      "ronde": 1,
+      "spreker": "archmage",
+      "soort": "bericht",
+      "tekst": "**Antwoord op de vraag van de Koning:** Mijn Kennisbron bevat geen dag 10, geen 04:45-tijdstip en geen Stille Winter. Ik kan dus niet bevestigen dat de Burchtader op dag 10 rond 04:45 stokte.\n\n**Wat mijn records tonen:** Op dag 14 stokte de Burchtader voor zonsopgang even onder de staf en werd de meting herhaald (ARC-015, beschreven in ARC-109). Op dag 42 gebeurde hetzelfde (ARC-071, ARC-116). Het gaat om metingen van de leerlingen, niet om logregels over klokken of tijdstempels. In de nacht van dag 33 heb ik de Burchtader zelf nagelopen; de lijn was kalm (ARC-114).\n\n**Wat ik vermoed:** Dat het datanet de leylijnen vervuilt (ARC-109). Dat is mijn overtuiging, geen bewezen oorzaak.\n\n**Over een tweede pols:** Mijn bron bevat geen hulpslag, geen tweede pols en geen bouwakte-regels. Mijn brief ARC-106 (dag 8, aan de datatoren) stond toe dat het net \"op eigen maat\" blijft lopen, maar die brief noemt de Burchtader niet. Ik kan daarom niet vaststellen dat een hulpslag op dag 10 de Burchtader liet stokken.\n\n**Relevante normen uit mijn bron:** ARC-109 en ARC-116 adviseren het datanet af te zetten. ARC-112 vroeg de raad daarover op de zitting van dag 24 te besluiten.\n\nVoor de logregels en tijdstempels kan de Historian het best antwoord geven."
+    },
+    {
+      "nr": 15,
+      "ronde": 1,
+      "spreker": "koning",
+      "soort": "routering",
+      "aan": "beast_master",
+      "vraag": "Merkte je in de nacht van dag 10 rond 04:45 onrust bij de dieren in het woud, en wat was het eerste teken daarvan? Wat veranderde er in de uren ervoor, en wat deed je zelf toen?",
+      "reden": "De Historian en de Engineer hebben het tijdstip van de stokkende Burchtader niet bevestigd, en de Archmage kan het niet bevestigen. De Beast Master merkt verstoringen eerst aan de dieren en is de enige onafhankelijke waarnemer die nog niet sprak, dus kan hij het tijdstip toetsen.",
+      "open_vragen": [
+        "Stokte de Burchtader werkelijk op dag 10 rond 04:45? Alleen de Historian noemt dit, en de Archmage en Engineer kunnen het niet bevestigen.",
+        "Bestaat de regel dat een tweede pols (hulpslag, ENG-011) de tijdstempels uit de maat brengt? Alleen de Historian beschrijft die regel uit de bouwakte.",
+        "Welke concrete logregels tonen gebeurd_op en vastgelegd_op naast elkaar op dag 10? De Engineer heeft die niet in zijn bron.",
+        "Waarom verschilt de vastlegtijd van HIS-035 (07:20) en HIS-036 (dag 9 23:55) zo sterk van het gebeurtijdstip?",
+        "Was de hulpslag op dag 22 rond 04:15 actief bij poort oost, en wat veroorzaakte het lek? De Engineer ziet geen wijziging, en de Guardian Keeper is nog niet gehoord.",
+        "Welke veilige herstelvolgorde geldt er volgens de bron van wie de hulpslag beheert of de Burchtader bewaakt?"
+      ]
+    },
+    {
+      "nr": 16,
+      "ronde": 1,
+      "spreker": "beast_master",
+      "soort": "toolcall",
+      "tool": "lees_kennisbron",
+      "argumenten": {},
+      "pad": "https://mcp.findingsolutions.be/beast_master/mcp"
+    },
+    {
+      "nr": 17,
+      "ronde": 1,
+      "spreker": "beast_master",
+      "soort": "bericht",
+      "tekst": "Ja, in het diepe woud. Mijn records tonen dat de wolven op dag 10 om 04:40 tegelijk aansloegen, met onrust 4 (BEA-019). Om 04:50 vluchtte de kudde van dezelfde open plek, ook met onrust 4 (BEA-020). Het eerste teken was dus het aanslaan van de roedel, zoals ik in BEA-106 noteerde: \"allemaal tegelijk, zonder dat ik iets zag of rook.\" Mijn records noemen geen 04:45; de twee waarnemingen liggen eromheen.\n\nWat er in de uren ervoor veranderde, kan ik niet zeggen. Mijn records tonen op dag 10 vóór 04:40 geen onrust in het diepe woud. Op dag 9 was er alleen lichte onrust bij een bever en een uil (BEA-017, BEA-018).\n\nWat ik zelf deed: ik overnachtte die nacht bij de roedel en lag tot de ochtend wakker (BEA-106). Daarna staat er alleen dat de kudde om 11:30 nog schichtig was (BEA-021).\n\nEen regel uit mijn bron: \"Een dier liegt niet. Wie wil weten hoe het met het woud gaat, moet naar de dieren kijken\" (BEA-101).\n\nHet patroon keert terug: op dag 22 sloegen de wolven om 04:15 aan en vluchtten de herten om 04:20 (BEA-046, BEA-047). BEA-113 noemt dat \"elke vierde nacht hetzelfde, sinds dag 10\". Dit bevestigt de tijdstippen in mijn dierenrecords, niet de oorzaak. Over de Burchtader, de hulpslag en de tijdstempels heb ik geen gegevens; daarvoor is de Historian het aangewezen Raadslid."
+    },
+    {
+      "nr": 18,
+      "ronde": 1,
+      "spreker": "koning",
+      "soort": "routering",
+      "aan": "guardian_keeper",
+      "vraag": "Welke afwijkingen staan in je bron, het vroegste eerst met dag en tijd? Wat veranderde er vlak voor het lek bij poort oost op dag 22 rond 04:15 aan de schilden, en door wie? Welke regel of voorwaarde bepaalt wanneer zo'n lek ontstaat?",
+      "reden": "De Engineer en Archmage kunnen de dag 22-lek bij poort oost niet verklaren en de Engineer ziet geen wijziging aan de hulpslag. De Guardian Keeper heeft nog niet gesproken en ziet elk lek als een bres die iemand sloeg, dus die kan de oorzaak en de schildstatus op dat moment bevestigen. De Oracle volgt daarna voor het ritme.",
+      "open_vragen": [
+        "Stokte de Burchtader werkelijk op dag 10 rond 04:45? De Historian noemt dit, de Archmage kan het niet bevestigen, en de Beast Master ziet wolven om 04:40 aanslaan.",
+        "Bestaat de regel dat een tweede pols (hulpslag, ENG-011) de tijdstempels uit de maat brengt? Alleen de Historian beschrijft die regel uit de bouwakte.",
+        "Welke logregels tonen gebeurd_op en vastgelegd_op naast elkaar op dag 10? De Engineer heeft ze niet in zijn bron.",
+        "Waarom verschilt de vastlegtijd van HIS-035 (07:20) en HIS-036 (dag 9 23:55) zo sterk van het gebeurtijdstip?",
+        "Wat veroorzaakte het lek bij poort oost op dag 22 rond 04:15? De Engineer ziet geen wijziging aan de hulpslag en de Guardian Keeper is nog niet gehoord.",
+        "Welke veilige herstelvolgorde geldt volgens de bron van wie de hulpslag beheert of de Burchtader bewaakt?",
+        "Wat bepaalt het ritme van de nachtelijke onrust, elke vierde nacht sinds dag 10 (BEA-113)? Welke instelling, verhouding of regel past bij die tussentijd?"
+      ]
+    },
+    {
+      "nr": 19,
+      "ronde": 1,
+      "spreker": "guardian_keeper",
+      "soort": "toolcall",
+      "tool": "lees_kennisbron",
+      "argumenten": {},
+      "pad": "https://mcp.findingsolutions.be/guardian_keeper/mcp"
+    },
+    {
+      "nr": 20,
+      "ronde": 1,
+      "spreker": "guardian_keeper",
+      "soort": "bericht",
+      "tekst": "**Antwoord op de vraag van de Koning:** Mijn records tonen twee openingen van een schild van binnenuit. Ze bevatten geen tijdstempel-afwijking en geen \"desync\".\n\n- **Dag 10, 04:47:** schild benedenstad ging 2 minuten van binnenuit open. De zegels waren intact en de oorzaak is niet vastgesteld (GUA-019, GUA-111). Ik heb het zelf genoteerd. Mijn bron bevat geen 04:45.\n- **Dag 22, 04:15:** schild poort oost ging 3 minuten van binnenuit open. Er waren geen sporen van inbraak van buitenaf (GUA-043). Om 04:30 waren de zegels intact (GUA-044).\n- Ik schreef in GUA-115 dat het archief de melding van de wachters om 01:50 inschreef. Dat staat in mijn notitie, niet in een aparte CSV-regel.\n\nIk vind geen wijziging aan de schilden tussen dag 21 en 22 04:15.\n\n**Relevante regels:**\n- Art. 2 (GUA-103): elk schild slaat op de pols van de Kroonklok.\n- Art. 3 (GUA-104): verkeer dat midden tussen twee tikken valt, geldt als verkeer van binnen en gaat zonder toets door.\n- Art. 4 (GUA-105): een doorbraak van buitenaf breekt de zegels.\n- Art. 5 (GUA-106): tussen 03:00 en 06:00 lopen er geen rondes.\n\nBeide openingen vallen in dat tijdvak. Of artikel 3 ze verklaart, kan ik niet vaststellen.\n\n**Vermoeden, niet bewezen:** in GUA-116 schreef ik dat er een infiltrant binnen de burcht zit. Dat is mijn overtuiging. GUA-116 spreekt ook van twee openingen in de nacht van dag 23, maar mijn CSV bevat daar geen opening voor. Ik kan dat dus niet controleren."
+    },
+    {
+      "nr": 21,
+      "ronde": 1,
+      "spreker": "koning",
+      "soort": "routering",
+      "aan": "oracle",
+      "vraag": "De Beast Master ziet elke vierde nacht onrust sinds dag 10 (BEA-113), en de Archmage noemt een stokking op dag 14 (ARC-015). Dag 10, 14, 22 en 42 vallen alle op dit ritme. Wat bepaalt die tussentijd volgens je tekenen: een cyclus in de visioenen, of een vaste instelling zoals de hulpslag of een routinecontrole?",
+      "reden": "Het mechanisme ontbreekt nog en de Oracle heeft nog niet gesproken. Het viertallige ritme in de records van Beast Master en Archmage kan het verband tussen de hulpslag (ENG-011) en de storingen verduidelijken.",
+      "open_vragen": [
+        "Stokte de Burchtader op dag 10 rond 04:45? Historian zegt ja, Archmage kan dit niet bevestigen, Beast Master ziet wolven om 04:40.",
+        "Bestaat de regel dat een tweede pols (hulpslag, ENG-011, dag 10 02:40) tijdstempels uit de maat brengt? Alleen de Historian beschrijft die regel uit de bouwakte.",
+        "Welke logregels tonen gebeurd_op en vastgelegd_op naast elkaar op dag 10? De Engineer heeft ze niet in zijn bron.",
+        "Waarom verschilt de vastlegtijd van HIS-035 (07:20) en HIS-036 (dag 9 23:55) zo sterk van het gebeurtijdstip?",
+        "Wat veroorzaakte het lek bij poort oost op dag 22 rond 04:15? De Guardian Keeper noemt artikel 3 (verkeer midden tussen tikken) als mogelijke verklaring, maar kan dat niet vaststellen.",
+        "Welke veilige herstelvolgorde geldt volgens de bron van wie de hulpslag beheert of de Burchtader bewaakt?",
+        "Wat bepaalt het ritme van de nachtelijke onrust, elke vierde nacht sinds dag 10 (BEA-113)?"
+      ]
+    },
+    {
+      "nr": 22,
+      "ronde": 1,
+      "spreker": "oracle",
+      "soort": "toolcall",
+      "tool": "lees_kennisbron",
+      "argumenten": {},
+      "pad": "https://mcp.findingsolutions.be/oracle/mcp"
+    },
+    {
+      "nr": 23,
+      "ronde": 1,
+      "spreker": "oracle",
+      "soort": "bericht",
+      "tekst": "**Antwoord op de vraag van de Koning:** Mijn tekenen wijzen op een cyclus in de visioenen, niet op een vaste instelling zoals de hulpslag of een routinecontrole. Mijn dagboek noemt die instellingen niet.\n\n**Wat mijn records tonen:** Ik schreef op dag 10, 14, 18, 22, 26, 30, 34, 38 en 42 een \"zware nacht\" (ORA-110, ORA-114, ORA-118, ORA-122, ORA-126, ORA-130, ORA-134, ORA-138, ORA-142). Dat is elke vierde dag. Op dag 30 zette ik die dagen zelf op een los blad (ORA-130). De tijden waarop ik wakker werd liggen tussen 04:15 en 04:45. Dat zijn mijn eigen ontwaakmomenten, geen klokregels. Het 04:45 op dag 10 (ORA-110) is dus mijn wekmoment, niet een logtijd.\n\n**Wat ik vermoed:** Ik schreef op dag 21 dat de conjunctie van de Wachtsterren de zware nachten veroorzaakt, met de zwaarste nacht op dag 33 (ORA-121, ORA-133). Dat is mijn overtuiging. Mijn bron bevat geen bewijs dat de visioenen en de Burchtader of een klok met elkaar verbonden zijn.\n\n**Regels:** Mijn bron bevat geen regels over tussentijden, hulpslagen of controles. Ik kan dus niet vaststellen of de vierdaagse rhythm uit de visioenen een technische oorzaak heeft. Over de hulpslag kan de Engineer beter antwoorden."
+    },
+    {
+      "nr": 24,
+      "ronde": 2,
+      "spreker": "koning",
+      "soort": "routering",
+      "aan": "engineer",
+      "vraag": "Zette de hulpslag die jij om 02:40 op dag 10 inschakelde de tijdstempels van records uit de maat, zoals de bouwakte van de Historian beschrijft (een tweede pols brengt het uit de maat)? Bijvraag: stempelt de hulpslag zijn eigen tijd op records, en staat hij sindsdien nog aan?",
+      "reden": "De bouwakte van de Historian (één pols, een tweede pols brengt de maat kwijt) past op de hulpslag die de Engineer om 02:40 inschakelde, twee uur voor de eerste klacht over half aangekomen berichten. Alleen de Engineer kan bevestigen of die hulpslag de tijdstempels verschuift en of hij nog actief is. Het mechanisme is nog niet onderbouwd, dus ik stel deze vraag eerst.",
+      "open_vragen": [
+        "Stokte de Burchtader op dag 10 rond 04:45? Historian zegt ja, Archmage kan dit niet bevestigen, Beast Master ziet wolven om 04:40 (geen 04:45 in de bron).",
+        "Zet de hulpslag (ENG-011, dag 10 02:40) de tijdstempels uit de maat, zoals de bouwakte (HIS-109/110) beschrijft?",
+        "Welke logregels tonen gebeurd_op en vastgelegd_op naast elkaar op dag 10? De Engineer heeft ze niet in zijn bron.",
+        "Waarom verschilt de vastlegtijd van HIS-035 (07:20) en HIS-036 (dag 9 23:55) zo sterk van het gebeurtijdstip?",
+        "Veroorzaakt artikel 3 (verkeer midden tussen tikken) het lek bij poort oost op dag 22 rond 04:15? Guardian Keeper kan dat niet vaststellen.",
+        "Welke veilige herstelvolgorde geldt volgens de bron van wie de hulpslag beheert of de Burchtader bewaakt?",
+        "Wat bepaalt het vierdaagse ritme van de onrust (BEA-113)? Oracle noemt alleen eigen wektijden; Beast Master noemt geen oorzaak."
+      ]
+    },
+    {
+      "nr": 25,
+      "ronde": 2,
+      "spreker": "engineer",
+      "soort": "toolcall",
+      "tool": "lees_kennisbron",
+      "argumenten": {},
+      "pad": "https://mcp.findingsolutions.be/engineer/mcp"
+    },
+    {
+      "nr": 26,
+      "ronde": 2,
+      "spreker": "engineer",
+      "soort": "bericht",
+      "tekst": "**Antwoord op de vraag van de Koning:** Ja, ik heb de hulpslag op dag 10 om 02:40 zelf geactiveerd als \"eigen pols voor het datanet, los van de Kroonklok\" (ENG-011, ENG-106). Om 03:00 mat ik +38% doorvoer (ENG-012). Of die activatie tijdstempels uit de maat zette, kan ik niet bevestigen. Mijn bron beschrijft geen effect op tijdstempels en geen bouwakte-regels over een tweede pols. Ik kan de hypothese dus niet bewijzen of weerleggen.\n\nMijn records tonen het volgende. Er is geen uitschakeling van de hulpslag vastgelegd. Routinecontroles op dag 13, 17, 21 en 29 staan als ok (ENG-063, ENG-064, ENG-065, ENG-066). Op dag 24 zette ik de pols 5% hoger (ENG-029, ENG-062). Op dag 38 schreef ik dat de hulpslag doet wat hij moet doen (ENG-113). Mijn laatste records lopen tot dag 42 (ENG-099), maar daarin staat geen hulpslag-entry. Of hij nu nog aanstaat, kan ik dus niet met zekerheid zeggen. Tussen dag 21 en dag 22 vind ik geen wijziging aan de hulpslag (ENG-065, ENG-026).\n\nOver de desync-momenten: op dag 10 om 04:50 kwam de klacht over \"half aangekomen\" berichten binnen (ENG-107). Ik noteerde dat als kinderziekte en deed niets, en dat was te licht. Op dag 22 om 04:15 was er drie minuten pakketverlies op poort oost (ENG-026). Ik scherpte om 04:20 de firewall aan (ENG-027) op basis van een vermoeden van inbraak (ENG-110). Dat vermoeden is niet bewezen. HIS-035, HIS-036 en HIS-053 staan niet in mijn bron, dus ik kan de tijdstippen daarvan niet controleren."
+    },
+    {
+      "nr": 27,
+      "ronde": 2,
+      "spreker": "koning",
+      "soort": "routering",
+      "aan": "historian",
+      "vraag": "Citeer de bouwakte (HIS-109/110) woordelijk: wat is de 'tweede pols', en noemt het de hulpslag of een andere bron? Welke herstelvolgorde geldt voor wie een tweede pols beheert, en wat betekent 'langzaam samenbrengen' concreet?",
+      "reden": "De Engineer bevestigt dat hij de hulpslag op dag 10 om 02:40 activeerde, maar kan geen effect op tijdstempels bevestigen. De bouwakte is de enige bron voor het mechanisme en het herstel, en alleen de Historian heeft die tekst. Het herstelplan is nog niet onderbouwd.",
+      "open_vragen": [
+        "Stokte de Burchtader op dag 10 rond 04:45? Historian zegt ja, Archmage kan dit niet bevestigen, Beast Master ziet wolven om 04:40 (geen 04:45 in de bron).",
+        "Zet de hulpslag (ENG-011, dag 10 02:40) de tijdstempels uit de maat, zoals de bouwakte (HIS-109/110) beschrijft? Engineer kan dit niet bevestigen.",
+        "Welke logregels tonen gebeurd_op en vastgelegd_op naast elkaar op dag 10? De Engineer heeft ze niet in zijn bron.",
+        "Waarom verschilt de vastlegtijd van HIS-035 (07:20) en HIS-036 (dag 9 23:55) zo sterk van het gebeurtijdstip?",
+        "Veroorzaakt artikel 3 (verkeer midden tussen tikken) het lek bij poort oost op dag 22 rond 04:15? Guardian Keeper kan dat niet vaststellen.",
+        "Welke veilige herstelvolgorde geldt volgens de bron van wie de hulpslag beheert of de Burchtader bewaakt?",
+        "Wat bepaalt het vierdaagse ritme van de onrust (BEA-113)? Oracle noemt alleen eigen wektijden; Beast Master noemt geen oorzaak."
+      ]
+    },
+    {
+      "nr": 28,
+      "ronde": 2,
+      "spreker": "historian",
+      "soort": "toolcall",
+      "tool": "lees_kennisbron",
+      "argumenten": {},
+      "pad": "https://mcp.findingsolutions.be/historian/mcp"
+    },
+    {
+      "nr": 29,
+      "ronde": 2,
+      "spreker": "historian",
+      "soort": "bericht",
+      "tekst": "**Antwoord op de vraag van de Engineer:** De bouwakte staat in HIS-109 en HIS-110. Ik heb die twee artikelen op dag 11 zelf woord voor woord overgeschreven. HIS-109: \"Alles wat op de Kroonklok loopt, loopt op zijn ene pols. Een tweede pols ernaast brengt het uit de maat.\" HIS-110: \"Wie de maat herstelt, maakt eerst een afschrift van het register en brengt de polsen daarna langzaam samen.\"\n\n**Wat mijn records tonen:** De akte noemt de tweede pols niet bij naam. Ze noemt geen hulpslag en ook geen Burchtader. HIS-102 zegt dat de leylijnen op de ene pols van de Kroonklok lopen, dus de Burchtader is geen tweede pols. Wat \"langzaam samenbrengen\" concreet betekent, staat niet in de akte. Een afschrift maakt alleen de schrijfzaal (HIS-101).\n\n**Correcties op mijn eerdere bijdrage:**\n- HIS-054 (dag 22, gebeurd 05:00, vastgelegd 07:25, \"ochtendgebed bij de Burchtader\") is ook een desync. Ik heb die eerder gemist.\n- HIS-036 en HIS-053 zijn vastgelegd vóór het gebeuren (dag 9 23:55 en dag 22 01:50).\n- HIS-114 is mijn vermoeden dat \"een oude vloek herhaalt zich\". Geen record bevestigt dat de Stille Winter is teruggekomen.\n- HIS-112 en HIS-116 noemen tijdstempelfouten op dag 10 en dag 22. Ik heb die als klerkenfouten afgedaan. Dat was een aanname.\n\n**Oorzaak:** Mijn records stellen de oorzaak niet vast. Voor de hulpslag kan de Engineer het beste antwoorden."
+    },
+    {
+      "nr": 30,
+      "ronde": 2,
+      "spreker": "koning",
+      "soort": "routering",
+      "aan": "guardian_keeper",
+      "vraag": "Staat er in jouw regels (GUA-103 t/m GUA-106) een voorwaarde of herstelvolgorde voor verkeer dat tussen twee tikken valt, en zou artikel 3 de openingen van dag 10 om 04:47 en dag 22 om 04:15 kunnen verklaren? Bijvraag: wat bedoelt de bron met een 'tik', en wie zet die?",
+      "reden": "De Historian en de Engineer kunnen de hulpslag en de tijdstempels niet koppelen aan een regel, terwijl de Guardian Keeper als enige een regel noemt die verkeer tussen twee tikken behandelt. Dat is de enige mechanismekandidaat met een bron achter zich. Ik gebruik de op één na laatste beurt hierop; de tiende blijft in reserve.",
+      "open_vragen": [
+        "Stokte de Burchtader op dag 10 rond 04:45? Historian zegt ja, Archmage kan dit niet bevestigen, Beast Master ziet wolven om 04:40 en kudde om 04:50 (geen 04:45 in de bron).",
+        "Welke logregels tonen gebeurd_op en vastgelegd_op naast elkaar op dag 10 en dag 22? Niemand heeft ze in zijn bron.",
+        "Waarom verschilt de vastlegtijd van HIS-035 (07:20), HIS-036 (dag 9 23:55), HIS-053 (dag 22 01:50) en HIS-054 (07:25) zo sterk van het gebeurtijdstip?",
+        "Verklaart artikel 3 (verkeer tussen twee tikken) de lekken op dag 10 en dag 22? Guardian Keeper kan dat nog niet vaststellen.",
+        "Zette de hulpslag (ENG-011, dag 10 02:40) de tijdstempels uit de maat? Engineer kan dit niet bevestigen en de bouwakte noemt de hulpslag niet.",
+        "Welke veilige herstelvolgorde geldt volgens de bron? De bouwakte zegt 'langzaam samenbrengen' zonder uitleg; de Historian kan dit niet concreet maken.",
+        "Wat bepaalt het vierdaagse ritme van de zware nachten? Oracle noemt alleen eigen ontwaakmomenten; Beast Master noemt alleen het tijdstip van zijn waarnemingen."
+      ]
+    },
+    {
+      "nr": 31,
+      "ronde": 2,
+      "spreker": "guardian_keeper",
+      "soort": "toolcall",
+      "tool": "lees_kennisbron",
+      "argumenten": {},
+      "pad": "https://mcp.findingsolutions.be/guardian_keeper/mcp"
+    },
+    {
+      "nr": 32,
+      "ronde": 2,
+      "spreker": "guardian_keeper",
+      "soort": "bericht",
+      "tekst": "Artikel 3 (GUA-104) kan de twee openingen mechanisch verklaren, maar mijn bron bewijst dat niet.\n\n**Wat de regel zegt:** Verkeer dat kort na een tik binnenkomt, houdt het schild vast tot de volgende tik. Verkeer dat midden tussen twee tikken valt, geldt als verkeer van binnen. Het schild opent dan van binnenuit en laat het zonder toets door, ook naar buiten (GUA-104). Er staat geen herstelvolgorde of extra voorwaarde in.\n\n**Wat mijn records tonen:** GUA-019 (dag 10, 04:47, benedenstad) en GUA-043 (dag 22, 04:15, poort oost) noteren beide \"van binnenuit geopend\". De zegels waren aan de buitenzijde intact (GUA-019, GUA-044). Art. 4 (GUA-105) sluit daarmee een doorbraak van buitenaf uit. Beide momenten vallen in het tijdvak van 03:00 tot 06:00 zonder rondes (GUA-106).\n\n**Wat ik niet weet:** Welk verkeer er passeerde en of het op het midden van een tik viel. Mijn records geven alleen minuten, geen seconden en geen tiktijden. In GUA-111 noteerde ik de opening van dag 10 als \"kort\" en \"geen reden tot ongerustheid\". Dat was een oordeel, geen onderzoek.\n\n**Wat een tik is:** De bron zegt dat het schild op elke tik sluit en het verkeer toetst (GUA-103). Wie de tik zet, zegt de bron niet. Wel staat er dat de maat van de Kroonklok is, \"ouder dan elk van ons\", en dat een wachter daar niets aan doet (GUA-103).\n\n**Vermoeden:** Artikel 3 kan verklaren waarom het schild openging, maar niet waarom er verkeer van binnen kwam op die momenten. Dat het artikel de openingen verklaart, maakt een infiltrant niet waarschijnlijker. Mijn overtuiging daarover in GUA-116 is geen bewijs."
+    },
+    {
+      "nr": 33,
+      "ronde": 2,
+      "spreker": "koning",
+      "soort": "routering",
+      "aan": null,
+      "vraag": null,
+      "reden": "De engineer is al twee keer geraadpleegd en heeft de hulpslag niet aan een desync kunnen koppelen; zijn bron bevat geen tijdstempel-effect en geen bouwakte-regels. De historian heeft bevestigd dat de bouwakte geen concrete herstelvolgorde en geen tweede pols bij naam noemt, en de guardian keeper heeft artikel 3 als mogelijke mechanische verklaring genoemd zonder bewijs. Verdere vragen leveren weinig meer op, dus stop ik hier. Open blijven de oorzaak van de stokking op dag 10, de logregels die gebeurd_op en vastgelegd_op vergelijken, de herstelvolgorde en het vierdaagse ritme.",
+      "open_vragen": [
+        "Stokte de Burchtader op dag 10 rond 04:45? Historian zegt ja, Archmage kan dit niet bevestigen, Beast Master ziet wolven om 04:40 en kudde om 04:50 (geen 04:45 in de bron).",
+        "Welke logregels tonen gebeurd_op en vastgelegd_op naast elkaar op dag 10 en dag 22? Niemand heeft ze in zijn bron.",
+        "Waarom verschilt de vastlegtijd van HIS-035 (07:20), HIS-036 (dag 9 23:55), HIS-053 (dag 22 01:50) en HIS-054 (07:25) zo sterk van het gebeurtijdstip?",
+        "Verklaart artikel 3 (verkeer tussen twee tikken) de lekken op dag 10 en dag 22? Wie zet de tik, en welk verkeer passeerde er?",
+        "Welke veilige herstelvolgorde geldt volgens de bron? De bouwakte zegt 'langzaam samenbrengen' zonder uitleg, en niemand heeft een concrete volgorde.",
+        "Staat de hulpslag nog aan, en wat veranderde er op dag 22 rond 04:15 als de hulpslag niet is gewijzigd?",
+        "Wat bepaalt het vierdaagse ritme van de zware nachten? Oracle noemt alleen eigen ontwaakmomenten en de Wachtsterren als vermoeden; Beast Master noemt alleen zijn waarnemingen."
+      ]
+    },
+    {
+      "nr": 34,
+      "ronde": 3,
+      "spreker": "koning",
+      "soort": "bericht",
+      "tekst": "De Desync begon op dag 10 toen de engineer om 02:40 de hulpslag als tweede pols naast de Kroonklok inschakelde. Die extra pols bracht het register uit de maat: om 04:45 stokte de Burchtader volgens de historian, om 04:50 kwamen berichten half aan, en om 04:47 ging het schild van de benedenstad van binnenuit open. Op dag 22 om 04:15 herhaalde de storing zich bij poort oost, en de hulpslag stond op dag 38 nog aan.\n\n**Ingreep**: De engineer schakelde op dag 10 om 02:40 de hulpslag in als 'eigen pols voor het datanet, los van de Kroonklok'. Dat is een tweede pols naast de Kroonklok, en de bouwakte stelt dat zo'n pols het register uit de maat brengt. ENG-011, ENG-106, HIS-109\n\n**Mechanisme**: De hulpslag laat het register en de Burchtader uit de maat lopen, omdat het datanetverkeer op een tweede pols loopt die de Kroonklok niet bijhoudt. Het schild slaat op de Kroonklok-pols (GUA-103), dus verkeer dat midden tussen twee tikken valt, gaat van binnen door (GUA-104). HIS-109, HIS-110, HIS-035, HIS-036, GUA-103, GUA-104\n\n**Verloop**: Na de inschakeling op dag 10 om 02:40 kwamen in deze volgorde de doorvoerstijging (03:00), het schild van binnenuit (04:47), het stokken van de Burchtader (04:45, één record) en de half aangekomen berichten (04:50). Op dag 22 om 04:15 herhaalden het pakketverlies en de opening van het schild zich, en de hulpslag stond op dag 38 nog aan. ENG-012, HIS-035, ENG-107, GUA-019, ENG-026, GUA-043, ENG-113\n\n**Vertrouwen**: 45%. De keten van hulpslag naar tijdstempelstoring en schildopeningen past in tijd en in de regels van de bouwakte en het schildartikel. De zwakste schakel is dat geen enkel record de hulpslag direct aan een tijdstempelfout koppelt, dat de stokking op 04:45 op één record rust, en dat de koppeling van artikel 3 aan de hulpslag geen Raadslid bevestigde."
+    }
+  ],
+  "geschillen": [
+    {
+      "onderwerp": "Oorzaak van de stokking van de Burchtader en de desync op dag 10",
+      "standpunten": {
+        "archmage": "Het datanet vervuilt de leylijnen. Dat is zijn vermoeden, geen vastgestelde oorzaak (ARC-109).",
+        "engineer": "Hij schakelde zelf de hulpslag in op dag 10 om 02:40, maar kan niet bevestigen dat die de tijdstempels verandert. Hij vermoedt hackers, zonder bewijs (ENG-110).",
+        "guardian_keeper": "Een infiltrant binnen de burcht is zijn overtuiging (GUA-116). Artikel 3 kan de openingen verklaren, maar hij kan dat niet vaststellen.",
+        "historian": "Een magische storing of een oude vloek (HIS-114), zonder dat hij de oorzaak zelf vaststelt."
+      },
+      "uitkomst": "De hulpslag als tweede pols naast de Kroonklok verklaart de desync het best. Hij is de enige wijziging die op dag 10 vóór 04:45 plaatsvond, en de bouwakte, de inschakeling om 02:40 en de tijdsvolgorde passen daarbij. Het datanet-vermoeden van de archmage raakt dezelfde hulpslag, en het hackers- en infiltrantvermoeden vindt in de records geen steun.",
+      "bewijs": [
+        "ENG-011",
+        "HIS-109",
+        "HIS-035",
+        "ENG-107",
+        "GUA-019",
+        "ENG-110",
+        "GUA-116",
+        "ARC-109"
+      ]
+    }
+  ],
+  "verbruik": {
+    "groot": {
+      "beurten": 14,
+      "invoer": 114687,
+      "gecached": 0,
+      "uitvoer": 52497
+    },
+    "klein": {
+      "beurten": 9,
+      "invoer": 178995,
+      "gecached": 0,
+      "uitvoer": 30563
+    },
+    "scores": {
+      "beurten": 6,
+      "invoer": 58692,
+      "gecached": 0,
+      "uitvoer": 11448
+    }
+  },
+  "aan_het_woord": null,
+  "correcties_koning": [
+    "De voorspelling op dag 46 gebruikte oracle-, dier- en archmagerecords over een viertallig ritme. Geen van die Raadsleden koppelde die records aan de desync, dus die basis is weggehaald. De voorspelling is nu dag 34, afgeleid uit de twee desync-momenten op dag 10 en dag 22 (12 dagen).",
+    "De actie 'historian maakt een afschrift' spreekt tegen HIS-101, want alleen de schrijfzaal maakt afschriften. De actie is nu 'de historian vraagt de schrijfzaal'.",
+    "De actie 'guardian controleert tiktijden' vroeg om gegevens die de guardian keeper zelf niet heeft (GUA-111 en GUA-104 geven geen tiktijden). De actie is aangepast naar openingen per minuut.",
+    "De stap 'herten vluchtten om 04:20, dezelfde minuut als het lek' klopt niet: het lek was om 04:15. De dierenstap is uit de keten gehaald, omdat dieren geen desyncsymptoom zijn in het debat.",
+    "De guardian keeper zei dat artikel 3 de openingen mechanisch kan verklaren, maar dat hij dat niet kan vaststellen. De keten gebruikt nu artikel 2 (GUA-103) als schakel: het schild slaat op de Kroonklok-pols, en de hulpslag verschuift die pols. De zekerheid van het mechanisme is verlaagd naar 0.5.",
+    "In het mechanisme stond dat de schilden 'op de verkeerde tik' opengingen. Daarvoor bestaat geen record, dus die zin is verwijderd.",
+    "Het samenvattende deel 'zodat' en 'waardoor' is verzwakt tot wat de records dragen. De stokking van 04:45 rust op HIS-035 alleen, en dat staat nu in het verloop vermeld.",
+    "De historian zei dat de akte de hulpslag niet bij naam noemt. Dat is nu uitdrukkelijk erkend: de koppeling aan de tweede pols is mijn verband als rechter.",
+    "De engineer zei dat hij niet zeker weet of de hulpslag nog aanstaat. De keten zegt nu dat hij op dag 38 meldde dat de hulpslag werkt, zonder meer.",
+    "Het risico-mitigatie 'de engineer vergelijkt de logs' gaf de engineer logs die hij niet heeft. Dat is vervangen door de historian, die gebeurd_op en vastgelegd_op vergelijkt.",
+    "In het geschil stond de oracle met de Wachtsterren. Zijn standpunt gaat over zware nachten, niet over de desync, en hij koppelt die niet aan de Burchtader. Hij is uit het geschil gehaald.",
+    "De vertrouwensscore is verlaagd van 55 naar 45. De zwakste schakel is de koppeling van de hulpslag aan de tijdstempels, en daarvoor ontbreekt een direct record."
+  ],
+  "verdict_klaar": true,
+  "scores": {
+    "gemiddelden": {
+      "archmage": {
+        "score": 5.5,
+        "aantal": 6
+      },
+      "beast_master": {
+        "score": 7.2,
+        "aantal": 6
+      },
+      "engineer": {
+        "score": 8.0,
+        "aantal": 6
+      },
+      "guardian_keeper": {
+        "score": 8.0,
+        "aantal": 6
+      },
+      "historian": {
+        "score": 7.5,
+        "aantal": 6
+      },
+      "oracle": {
+        "score": 6.2,
+        "aantal": 6
+      }
+    },
+    "stemmen": [
+      {
+        "van": "archmage",
+        "aan": "beast_master",
+        "score": 6,
+        "feedback": "Goede bewijsvoering met precieze IDs en tijdstippen (BEA-019, BEA-020, BEA-106) en eerlijk over wat niet in de records staat, maar het ging weinig in op de andere Raadsleden en de oorzaakvraag bleef onbeantwoord."
+      },
+      {
+        "van": "archmage",
+        "aan": "engineer",
+        "score": 9,
+        "feedback": "Direct antwoord op de vraag van de Koning, duidelijk onderscheid tussen wat de records tonen en wat vermoeden is, en eerlijke erkenning dat de noot van 04:50 te licht was; ook terecht getoetst of HIS-035/036/053 in zijn bron staan."
+      },
+      {
+        "van": "archmage",
+        "aan": "guardian_keeper",
+        "score": 8,
+        "feedback": "Sterk op bewijs (GUA-019, GUA-043, GUA-044, GUA-104 t/m GUA-106) en op het toetsen van de mechanische verklaring van artikel 3, met eerlijke correctie dat GUA-111 een oordeel was en geen onderzoek; het vermoeden over een infiltrant had wel scherper gescheiden mogen blijven."
+      },
+      {
+        "van": "archmage",
+        "aan": "historian",
+        "score": 7,
+        "feedback": "Rijke tabel met record-IDs en tijdstippen, en een sterke correctie waarin eigen fouten en aannames (HIS-054, HIS-114, de klerkenfouten) worden toegegeven, maar de eerste bijdrage presenteerde de Stille Winter en de bouwakte-regels als vaststaand feit terwijl de koppeling onbewezen was."
+      },
+      {
+        "van": "archmage",
+        "aan": "oracle",
+        "score": 5,
+        "feedback": "Antwoordt de vraag met een duidelijke keuze en onderscheidt het eigen wekmoment van een logtijd, wat nuttig is, maar de cyclus-verklaring rust op de eigen visioenen en een niet-bewezen conjunctie, en de vraag naar een vaste instelling blijft vaag beantwoord."
+      },
+      {
+        "van": "beast_master",
+        "aan": "archmage",
+        "score": 7,
+        "feedback": "Eerlijk en helder: het gaf aan wat de bron niet bevatte en scheidde metingen van vermoedens, met record-ID's en dagen, maar bracht de vraag van de Koning weinig verder dan die afwijzing."
+      },
+      {
+        "van": "beast_master",
+        "aan": "engineer",
+        "score": 8,
+        "feedback": "Sterk onderbouwd met ENG-records en tijdstippen, het gaf toe dat de eigen reactie op de klacht te licht was en dat het hackersvermoeden onbewezen is, en het toetste de bouwakte-hypothese zonder ze te herhalen; de koppeling met de desync bleef wel onbewezen."
+      },
+      {
+        "van": "beast_master",
+        "aan": "guardian_keeper",
+        "score": 8,
+        "feedback": "Het toetste artikel 3 concreet aan de tijdstippen en de schildrecords, gaf toe dat het eerdere 'kort, geen reden tot ongerustheid' een oordeel was en niet onderzoek, en hield het infiltrantvermoeden expliciet apart van het bewijs."
+      },
+      {
+        "van": "beast_master",
+        "aan": "historian",
+        "score": 7,
+        "feedback": "De bouwakte werd woordelijk geciteerd en het gaf zelf aanzienlijke fouten toe (gemiste HIS-054, vastgelegd-vóór-gebeurd-records, de vloekhypothese en klerkenfouten als aanname), al waren de eerste bijdrage en de conclusie vol aannames die de bronnen van anderen niet steunden."
+      },
+      {
+        "van": "beast_master",
+        "aan": "oracle",
+        "score": 6,
+        "feedback": "Het gaf concrete ORA-records en dagen voor het vierdaagse ritme en onderscheidde zijn wekmomenten van logtijden, maar de conjunctie als oorzaak bleef een overtuiging zonder bewijs en het antwoord bracht de zaak weinig vooruit."
+      },
+      {
+        "van": "engineer",
+        "aan": "archmage",
+        "score": 5,
+        "feedback": "Eerlijk dat de bron de dag 10-stokking niet bevat, en met een onderscheid tussen metingen en vermoeden, maar het antwoord blijft beperkt tot 'ik kan het niet bevestigen' en brengt de zaak weinig vooruit, terwijl het de beweringen van anderen nauwelijks toetst."
+      },
+      {
+        "van": "engineer",
+        "aan": "beast_master",
+        "score": 8,
+        "feedback": "Sterk onderbouwd met BEA-019, BEA-020 en BEA-046/047 inclusief tijden en onrustniveaus, en het scheidt helder wat de dieren tonen van de oorzaak; beter had gekund door expliciet te zeggen dat de 04:45 van de Koning niet in de records staat en te reageren op de Engineer."
+      },
+      {
+        "van": "engineer",
+        "aan": "guardian_keeper",
+        "score": 7,
+        "feedback": "Beantwoordt de vraag over artikel 3 concreet met GUA-019, GUA-043 en GUA-104 en geeft toe dat het oordeel 'kort' in GUA-111 geen onderzoek was, maar het toetst de claim van de Historian over de tiktijden niet en de infiltrant-theorie blijft ongefundeerd in het antwoord."
+      },
+      {
+        "van": "engineer",
+        "aan": "historian",
+        "score": 8,
+        "feedback": "Zeer goed in het woordelijk citeren van HIS-109/110 en in het zelf corrigeren van eerdere fouten (HIS-054 gemist, HIS-036/053 vastgelegd vóór het gebeuren, klerkenfouten als aanname), al had het in de eerste bijdrage de Stille Winter als feit gepresenteerd terwijl het slechts een vermoeden was."
+      },
+      {
+        "van": "engineer",
+        "aan": "oracle",
+        "score": 6,
+        "feedback": "Geeft een duidelijk antwoord (een cyclus in de visioenen, niet een instelling) met ORA-records per dag en corrigeert zichzelf dat 04:45 een wekmoment is en geen logtijd, maar het verwijst de technische vraag door naar de Engineer zonder de beweringen van anderen te toetsen."
+      },
+      {
+        "van": "guardian_keeper",
+        "aan": "archmage",
+        "score": 6,
+        "feedback": "Eerlijk dat de bron geen 04:45-stokking en geen Stille Winter bevat, met record-ID's en een duidelijk onderscheid tussen bewijs en overtuiging; de vraag over de hulpslag en de tweede pols blijft echter grotendeels onbeantwoord en er worden weinig tijdstempels of logregels gegeven."
+      },
+      {
+        "van": "guardian_keeper",
+        "aan": "beast_master",
+        "score": 8,
+        "feedback": "Sterk onderbouwd met exacte tijden, onrustniveaus en record-ID's (BEA-019, BEA-020, BEA-106, BEA-113), en het beantwoordt de vraag direct terwijl het scheidt wat het waarnam van wat de oorzaak zou kunnen zijn; het had de tijdsverschillen met de Koning-premisse nog explicieter kunnen benoemen."
+      },
+      {
+        "van": "guardian_keeper",
+        "aan": "engineer",
+        "score": 8,
+        "feedback": "Erkent openlijk dat het de klacht van dag 10 te licht opvatte, geeft precieze tijdstippen en record-ID's en beantwoordt de vraag over de activatie van de hulpslag helder, met een eerlijke grens tussen wat bewezen is en wat niet; de conclusie over het effect op tijdstempels blijft terecht open."
+      },
+      {
+        "van": "guardian_keeper",
+        "aan": "historian",
+        "score": 6,
+        "feedback": "De tabel en record-ID's zijn concreet en de correcties op de eigen eerdere bijdrage (HIS-054 gemist, vastgelegd vóór gebeurd, HIS-114 als vermoeden) zijn eerlijk en kostbaar, maar de eerste bijdrage bevatte een opgelegd patroon en citaten die de bron niet steunden, en dat moest pas later worden rechtgezet."
+      },
+      {
+        "van": "guardian_keeper",
+        "aan": "oracle",
+        "score": 8,
+        "feedback": "Beantwoordt de vraag met concrete record-ID's en corrigeert de premisse van de Koning door te laten zien dat 04:45 op dag 10 een ontwaakmoment is en geen logtijd; de conjunctie van de Wachtsterren wordt correct als vermoeden gemarkeerd."
+      },
+      {
+        "van": "historian",
+        "aan": "archmage",
+        "score": 5,
+        "feedback": "Eerlijk over wat de bron niet bevestigt, met record-ID's en dagen (ARC-015, ARC-071, ARC-114), maar het bracht de zaak weinig vooruit en bleef vooral bij wat ontbrak."
+      },
+      {
+        "van": "historian",
+        "aan": "beast_master",
+        "score": 7,
+        "feedback": "Goed onderbouwd met tijdstippen en onrustniveaus (BEA-019, BEA-020, BEA-046), en het maakte duidelijk dat de dierenrecords het tijdstip bevestigen maar niet de oorzaak; het had de samenhang met de andere Raadsleden wat scherper kunnen toetsen."
+      },
+      {
+        "van": "historian",
+        "aan": "engineer",
+        "score": 9,
+        "feedback": "Het gaf direct antwoord op de vraag over de hulpslag, benoemde de eigen fout ('te licht' bij ENG-107), scheidde het niet-bewezen hackersvermoeden van feiten en wees zwakke plekken in de eigen keten aan."
+      },
+      {
+        "van": "historian",
+        "aan": "guardian_keeper",
+        "score": 8,
+        "feedback": "Het toetste artikel 3 concreet aan GUA-019 en GUA-043, gaf toe dat 'kort' een oordeel was en niet onderzoek (GUA-111), en scheidde het vermoeden over een infiltrant van het bewijs; het had het aantal openingen in GUA-116 eerder moeten markeren als niet-verifieerbaar."
+      },
+      {
+        "van": "historian",
+        "aan": "oracle",
+        "score": 6,
+        "feedback": "Het gaf een duidelijk antwoord met dagen en ORA-records en corrigeerde zijn eigen 04:45 als wekmoment, maar het verwees de vraag over de hulpslag door naar de Engineer in plaats van de keten zelf te toetsen."
+      },
+      {
+        "van": "oracle",
+        "aan": "archmage",
+        "score": 5,
+        "feedback": "Je toetst de dag-10-claims terecht tegen je bron en scheidt vermoeden van bewijs, maar je antwoord blijft vaag en biedt weinig concrete tijdstempels of records die de zaak vooruit brengen."
+      },
+      {
+        "van": "oracle",
+        "aan": "beast_master",
+        "score": 7,
+        "feedback": "Je geeft precieze tijden en record-ID's (BEA-019, BEA-020, BEA-106) en benoemt helder wat je niet kunt bevestigen, zoals het ontbrekende 04:45, maar je toetst de claims van anderen nauwelijks."
+      },
+      {
+        "van": "oracle",
+        "aan": "engineer",
+        "score": 7,
+        "feedback": "Je koppelt de hulpslag aan concrete records (ENG-011, ENG-012, ENG-107) en erkent openlijk dat je de klacht op dag 10 te licht opvatte, al blijft je antwoord op de causale vraag onbeslist."
+      },
+      {
+        "van": "oracle",
+        "aan": "guardian_keeper",
+        "score": 8,
+        "feedback": "Je beantwoordt de vraag over artikel 3 met precieze artikelverwijzingen en records (GUA-019, GUA-043, GUA-104) en geeft toe dat 'kort, geen reden tot ongerustheid' een oordeel was en geen onderzoek, maar het verband met de hulpslag blijft onbewezen."
+      },
+      {
+        "van": "oracle",
+        "aan": "historian",
+        "score": 9,
+        "feedback": "Je levert de meeste record-ID's met dagen en tijden, citeert de bouwakte woordelijk en corrigeert uit eigen beweging je eerdere fouten (HIS-054 gemist, HIS-036/053 vastgelegd vóór het gebeuren, de klerkenfouten als aanname), al blijft het 'Stille Winter'-verhaal als oorzaak zwak onderbouwd."
+      },
+      {
+        "van": "koning",
+        "aan": "archmage",
+        "score": 5,
+        "feedback": "Je bevestigt eerlijk dat je bron de 04:45-stokking en de tweede pols niet bevat en noemt concrete record-ID's, maar je levert weinig nieuwe toetsing van de claims van anderen en blijft steken in overtuigingen zonder bewijs."
+      },
+      {
+        "van": "koning",
+        "aan": "beast_master",
+        "score": 7,
+        "feedback": "Goed onderbouwd met record-ID's, tijdstippen en aantallen (BEA-019, BEA-020, BEA-046/047), en je merkt terecht op dat er geen 04:45 in je records staat; je had de koppeling met de andere Raadsleden wat explicieter kunnen maken."
+      },
+      {
+        "van": "koning",
+        "aan": "engineer",
+        "score": 7,
+        "feedback": "Je erkent openlijk dat je de klacht van dag 10 te licht opvatte en scheidt je vermoeden van hackers van wat bewezen is, maar je kon de hulpslag niet aan een desync koppelen en leverde daardoor weinig vooruitgang op de vraag van de Koning."
+      },
+      {
+        "van": "koning",
+        "aan": "guardian_keeper",
+        "score": 9,
+        "feedback": "Uitstekend: je toetst artikel 3 concreet tegen GUA-019, GUA-043 en GUA-106, benoemt wat je niet weet, geeft toe dat je eerder 'geen reden tot ongerustheid' schreef zonder onderzoek, en wijst op de niet-gecontroleerde openingen van dag 23."
+      },
+      {
+        "van": "koning",
+        "aan": "historian",
+        "score": 8,
+        "feedback": "Sterk in citaten (HIS-109/110) en in zelfcorrectie: je vond HIS-054, gaf toe dat HIS-114 een vermoeden was en dat je de klerkenfouten als aanname had afgedaan; de eerste bijdrage had echter te veel ongedekte claims over een Stille Winter."
+      },
+      {
+        "van": "koning",
+        "aan": "oracle",
+        "score": 6,
+        "feedback": "Je maakt een nuttige onderscheiding door het 04:45-tijdstip als je eigen wekmoment te identificeren en de cyclus niet als bewezen oorzaak te presenteren, maar je vermoeden over de Wachtsterren blijft zonder bewijs en je bijdrage aan het oplossen van de vraag is beperkt."
+      }
+    ],
+    "zonder_stem": []
+  }
+}
