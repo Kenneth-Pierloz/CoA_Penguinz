@@ -6,6 +6,8 @@ from pathlib import Path
 
 from jsonschema import Draft202012Validator
 
+from koning import laatste_dag, tijdsfout
+
 ROOT = Path(__file__).parent
 # Modellen schrijven ID's soms met een speciaal koppelteken (bv. U+2011): dat faalt op het schema.
 RARE_STREEP = re.compile("(ARC|ENG|GUA|HIS|ORA|BEA)[‐‑‒–—―−][0-9]{3}")
@@ -67,6 +69,10 @@ def volledigheid(verdict, trace):
             mist.append(f"verdict.json: {slot} is onbekend (null)")
         elif "zekerheid" not in s:
             mist.append(f"verdict.json: {slot} heeft geen zekerheid")
+    if tijdsfout(((verdict.get("oorzaak") or {}).get("verloop") or {}).get("bewering")):
+        mist.append("verdict.json: het verloop staat niet in de volgorde van de tijd")
+    if verdict.get("voorspelling") and verdict["voorspelling"]["dag"] < laatste_dag(beurten):
+        mist.append(f"verdict.json: de voorspelling (dag {verdict['voorspelling']['dag']}) ligt vóór dag {laatste_dag(beurten)} uit het debat")
     if not verdict.get("voorspelling"):
         mist.append("verdict.json: voorspelling ontbreekt")
     gesproken = " ".join(b.get("tekst", "") for b in beurten if b.get("soort") == "bericht" and b.get("spreker") in ROLLEN)

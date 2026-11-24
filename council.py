@@ -19,7 +19,7 @@ from dotenv import load_dotenv
 from openai import AsyncOpenAI
 
 import raadsleden
-from koning import Koning, onbeantwoord, toespraak, vind_ids
+from koning import Koning, normaal, onbeantwoord, toespraak, vind_ids
 from scores import geef_scores
 
 ROOT = Path(__file__).parent
@@ -221,7 +221,7 @@ async def run():
                     if not r.text.strip() or GEDACHTEN.search(r.text):
                         trace.setdefault("mislukte_pogingen", []).append({"rol": rol, "na_beurt": len(beurten), "poging": poging, "fout": "geen afgewerkt antwoord"})
                         continue  # leeg of geen afgewerkt antwoord: telt niet
-                    tekst = r.text
+                    tekst = normaal(r.text)  # gewone koppeltekens in ID's
                     if vind_ids(tekst, rol) & gezien[rol] or poging >= 2:  # zonder bewijs: één herkansing
                         break
                 if poging > 1:

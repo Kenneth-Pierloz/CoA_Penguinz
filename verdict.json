@@ -1,163 +1,234 @@
 {
-  "run_id": "2026-11-24T14:38:09+01:00_d9e5a450",
-  "samenvatting": "De Desync begon op dag 10 toen de engineer om 02:40 de hulpslag als tweede pols naast de Kroonklok inschakelde. Die extra pols bracht het register uit de maat: om 04:45 stokte de Burchtader volgens de historian, om 04:50 kwamen berichten half aan, en om 04:47 ging het schild van de benedenstad van binnenuit open. Op dag 22 om 04:15 herhaalde de storing zich bij poort oost, en de hulpslag stond op dag 38 nog aan.",
+  "run_id": "2026-11-24T15:02:17+01:00_14b054b3",
+  "samenvatting": "De hulpslag die de Engineer op dag 10 om 02:40 als eigen pols activeerde, is de best onderbouwde ingreep. Via de maat van de Kroonklok sluit dat aan op de bres van dag 22 van binnenuit en op de symptomen in het venster 04:15 tot 04:50, dat om de vier dagen terugkeert.",
   "oorzaak": {
     "ingreep": {
-      "bewering": "De engineer schakelde op dag 10 om 02:40 de hulpslag in als 'eigen pols voor het datanet, los van de Kroonklok'. Dat is een tweede pols naast de Kroonklok, en de bouwakte stelt dat zo'n pols het register uit de maat brengt.",
+      "bewering": "Op dag 10 om 02:40 activeerde de Engineer de hulpslag als eigen pols voor het datanet, los van de Kroonklok. Hogerhand keurde de proefopstelling van dag 9 goed met het verzoek het niet ruchtbaar te maken. De Archmage had op dag 8 al geschreven dat het net op eigen maat mag lopen.",
       "bewijs": [
         "ENG-011",
-        "ENG-106",
-        "HIS-109"
+        "ENG-105",
+        "ENG-010",
+        "ARC-106"
       ],
-      "zekerheid": 0.7
+      "zekerheid": 0.75
     },
     "mechanisme": {
-      "bewering": "De hulpslag laat het register en de Burchtader uit de maat lopen, omdat het datanetverkeer op een tweede pols loopt die de Kroonklok niet bijhoudt. Het schild slaat op de Kroonklok-pols (GUA-103), dus verkeer dat midden tussen twee tikken valt, gaat van binnen door (GUA-104).",
+      "bewering": "Een tweede pols brengt de maat van de Kroonklok uit balans, waardoor het middenpunt tussen twee tikken kan verschuiven. Verkeer op dat middenpunt gaat zonder toets door, en van 03:00 tot 06:00 is er geen ronde. Zo kon de bres van dag 22 om 04:15 van binnenuit ontstaan en ongemerkt blijven.",
       "bewijs": [
         "HIS-109",
-        "HIS-110",
-        "HIS-035",
-        "HIS-036",
         "GUA-103",
-        "GUA-104"
+        "GUA-104",
+        "GUA-106",
+        "GUA-043"
       ],
-      "zekerheid": 0.5
+      "zekerheid": 0.4
     },
     "verloop": {
-      "bewering": "Na de inschakeling op dag 10 om 02:40 kwamen in deze volgorde de doorvoerstijging (03:00), het schild van binnenuit (04:47), het stokken van de Burchtader (04:45, één record) en de half aangekomen berichten (04:50). Op dag 22 om 04:15 herhaalden het pakketverlies en de opening van het schild zich, en de hulpslag stond op dag 38 nog aan.",
+      "bewering": "Vanaf dag 10 komt elke vierde nacht rond 04:15 tot 04:50 terug: dag 10, 14, 18, 22, 26, 30, 34, 38 en 42. Op dag 10 volgden een doorvoerpiek om 03:00, stilstand van de Burchtader om 04:45 en half aangekomen berichten om 04:50. Op dag 14 lagen de leylijnen laag, en op dag 22 volgden de bres, pakketverlies en vluchtende dieren.",
       "bewijs": [
-        "ENG-012",
-        "HIS-035",
-        "ENG-107",
-        "GUA-019",
-        "ENG-026",
-        "GUA-043",
-        "ENG-113"
+        "ORA-110",
+        "ORA-114",
+        "ORA-118",
+        "ORA-122",
+        "ORA-126",
+        "ORA-130",
+        "ORA-134",
+        "ORA-138",
+        "ORA-142",
+        "BEA-019",
+        "BEA-020",
+        "ARC-015",
+        "ARC-028",
+        "ENG-026"
       ],
       "zekerheid": 0.6
     }
   },
   "acties": [
     {
-      "actie": "De historian vraagt de schrijfzaal om een afschrift van het register te maken, voordat er aan de polsen wordt gewerkt.",
-      "reden": "De bouwakte schrijft voor dat eerst een afschrift wordt gemaakt (HIS-110), en alleen de schrijfzaal maakt afschriften (HIS-101).",
+      "actie": "De Historian maakt eerst een afschrift van het register, vóór elke wijziging aan de maat of de pols.",
+      "reden": "Een tweede pols brengt de maat uit balans, en de bouwakte vraagt om een afschrift voordat de maat wordt hersteld.",
       "bewijs": [
         "HIS-110",
-        "HIS-101"
-      ]
-    },
-    {
-      "actie": "De engineer brengt de pols van de hulpslag langzaam samen met de pols van de Kroonklok, zonder de hulpslag in één keer af te zetten.",
-      "reden": "De bouwakte schrijft voor de polsen langzaam samen te brengen, omdat een plotselinge wegval records doet verloren gaan (HIS-109, HIS-110). Dit verwijdert de tweede pols die het register uit de maat brengt.",
-      "bewijs": [
-        "HIS-110",
-        "ENG-011",
         "HIS-109"
       ]
     },
     {
-      "actie": "De archmage meet na elke stap of de Burchtader weer loopt.",
-      "reden": "De stokking van de Burchtader moet zijn opgeheven voordat de tijdstempels weer gelijk zijn. De archmage heeft eerder de Burchtader gemeten (ARC-015, ARC-109).",
+      "actie": "De Engineer meet eerst de logklok tegen de Kroonklok en haalt daarna de hulpslag van de eigen pols terug naar de Kroonklok-maat, stap voor stap in stappen van 0,1%.",
+      "reden": "De eigen pols sinds dag 10 02:40 is de verschuiving; de fijnregeling stelt het tempo in kleine stappen bij.",
       "bewijs": [
-        "ARC-015",
-        "HIS-035"
+        "ENG-011",
+        "HIS-109",
+        "ENG-114"
       ]
     },
     {
-      "actie": "De guardian keeper controleert na elke stap of er in het tijdvak 03:00 tot 06:00 weer openingen van binnenuit zijn, en noteert per opening de minuut.",
-      "reden": "Verkeer dat midden tussen twee tikken valt, gaat zonder toets door (GUA-104), en in dat tijdvak lopen geen rondes (GUA-106). De guardian keeper heeft geen tiktijden in zijn records, dus de controle gebeurt op openingen en minuten.",
+      "actie": "De Guardian Keeper controleert de zegels en de melding van schild poort oost, en meldt een gebroken zegel direct aan de wachtcommandant.",
+      "reden": "Een gebroken zegel is het enige signaal dat binnen het gat van 03:00 tot 06:00 een opening aangeeft.",
       "bewijs": [
-        "GUA-104",
-        "GUA-106",
-        "GUA-019"
+        "GUA-105",
+        "GUA-043"
+      ]
+    },
+    {
+      "actie": "De Guardian Keeper laadt schildstenen alleen overdag, één schild tegelijk, en noteert elke steen per schild en dag.",
+      "reden": "Herladen tijdens de nacht vergroot het gat in de controle; de regel vraagt om herladen overdag.",
+      "bewijs": [
+        "GUA-107"
       ]
     }
   ],
   "risicos": [
     {
-      "risico": "Het langzaam samenbrengen van de polsen kan records die op de hulpslag staan verliezen, en de doorvoer is al verhoogd met 38%.",
-      "mitigatie": "Maak eerst een afschrift van het register en breng de polsen stap voor stap samen, zoals de bouwakte voorschrijft (HIS-110)."
+      "risico": "Ontkoppelen van de hulpslag kan de doorvoer van het datanet terugbrengen, dat na dag 10 +38% stond.",
+      "mitigatie": "Stap voor stap terugzetten met de fijnregeling en eerst een afschrift van het register maken."
     },
     {
-      "risico": "Als niemand ingrijpt, blijft de hulpslag de Kroonklok-maat verstoren, met nieuwe stokkingen, half aangekomen berichten en openingen van het schild.",
-      "mitigatie": "Voer de herstelvolgorde uit en controleer daarna de Burchtader en de schilden in het tijdvak 03:00 tot 06:00."
+      "risico": "Het gat van 03:00 tot 06:00 zonder rondes blijft open tijdens het herstel.",
+      "mitigatie": "Posten melden zegelbreuk direct aan de wachtcommandant, zoals bij gebroken zegels is voorgeschreven."
     },
     {
-      "risico": "Het lek bij poort oost en de opening van het schild kunnen ook door een infiltrant of door hackers komen, want beide vermoedens staan in het debat.",
-      "mitigatie": "De guardian keeper controleert de openingen per minuut, en de historian vergelijkt gebeurd_op en vastgelegd_op van de records na het herstel."
+      "risico": "De tikmomenten van de Kroonklok zijn niet gemeten, dus het herstel kan op een verkeerd middenpunt rusten.",
+      "mitigatie": "Meet de verschuiving tussen logklok en Kroonklok vóór en na de terugzetting, en vergelijk met het register."
     }
   ],
   "keten": [
     {
-      "stap": "Op dag 10 om 02:40 schakelde de engineer de hulpslag in als 'eigen pols voor het datanet, los van de Kroonklok'. Dat is een tweede pols naast de Kroonklok.",
-      "regel": "Alles loopt op de ene pols van de Kroonklok; een tweede pols ernaast brengt het uit de maat (HIS-109). Het debat noemt de hulpslag niet bij naam in de akte. De koppeling tussen die tweede pols en de hulpslag maak ik als rechter, omdat de tijdsvolgorde en de inhoud passen.",
+      "stap": "Op dag 8 en 9 werd de hulpslag voorbereid: onderdelen geleverd, proefopstelling in de kelder, en hogerhand keurde het goed met het verzoek het niet ruchtbaar te maken. De Archmage had op dag 8 al geschreven dat het net op eigen maat mag lopen.",
+      "regel": "Een goedkeuring van hogerhand met geheimhouding gaat vooraf aan de activering van de hulpslag als eigen pols.",
+      "bewijs": [
+        "ENG-008",
+        "ENG-010",
+        "ENG-105",
+        "ARC-106"
+      ]
+    },
+    {
+      "stap": "Op dag 10 om 02:40 activeerde de Engineer de hulpslag als eigen pols voor het datanet, los van de Kroonklok.",
+      "regel": "Een tweede pols brengt de maat uit balans.",
       "bewijs": [
         "ENG-011",
-        "ENG-106",
         "HIS-109"
       ]
     },
     {
-      "stap": "Om 03:00 op dag 10 steeg de doorvoer met 38%, dus het datanetverkeer liep al op de extra pols.",
-      "regel": "De hulpslag draagt datanetverkeer buiten de Kroonklok om, zoals de engineer zelf meldde.",
+      "stap": "Het datanet op eigen pols gaf direct een doorvoerpiek van +38% om 03:00, terwijl de Kroonklok als maat gold.",
+      "regel": "De maat van elk schild is de pols van de Kroonklok, dus een afwijkende pols raakt het schild.",
       "bewijs": [
         "ENG-012",
-        "ENG-106"
+        "ENG-106",
+        "GUA-103"
       ]
     },
     {
-      "stap": "Om 04:45 op dag 10 stokte de Burchtader, en om 04:50 kwamen de berichten uit de benedenstad half aan.",
-      "regel": "Een register dat uit de maat loopt door een tweede pols, geeft afwijkende tijdstempels en gestokte of half aangekomen berichten (HIS-109, HIS-110). De klacht van 04:50 is door de engineer zelf geregistreerd.",
+      "stap": "Een verschoven maat verschuift het middenpunt tussen twee tikken; verkeer dat daar valt, gaat zonder toets door.",
+      "regel": "Art. 3: verkeer midden tussen twee tikken wordt als binnenverkeer behandeld en gaat zonder toets door.",
       "bewijs": [
-        "HIS-035",
-        "HIS-036",
-        "ENG-107",
-        "HIS-109"
+        "GUA-104"
       ]
     },
     {
-      "stap": "Om 04:47 op dag 10 ging het schild van de benedenstad van binnenuit open, zonder sporen van buiten, in het tijdvak 03:00 tot 06:00 zonder rondes.",
-      "regel": "Elk schild slaat op de pols van de Kroonklok (artikel 2, GUA-103). Als de tik op de verkeerde pols valt, kan verkeer midden tussen twee tikken komen te liggen. Dat gaat zonder toets door (artikel 3, GUA-104). Een doorbraak van buitenaf breekt de zegels (artikel 4, GUA-105), en de zegels waren intact (GUA-019, GUA-044).",
+      "stap": "Van 03:00 tot 06:00 lopen geen rondes en waakt elke post op eigen kracht, dus een opening in die gleuf wordt niet door een ronde opgemerkt.",
+      "regel": "Art. 5: van 03:00 tot de wissel van 06:00 lopen geen rondes.",
       "bewijs": [
-        "GUA-019",
-        "GUA-103",
-        "GUA-104",
-        "GUA-105",
         "GUA-106"
       ]
     },
     {
-      "stap": "Op dag 22 om 04:15 viel poort oost drie minuten uit, en het schild ging van binnenuit open.",
-      "regel": "De hulpslag stond nog aan (de engineer vond op dag 22 geen wijziging aan de hulpslag). Dezelfde verklaring geldt dus: verkeer op de verkeerde tik gaat van binnen door het schild (GUA-103, GUA-104). Een inbraak van buitenaf is uitgesloten door intacte zegels (GUA-044, GUA-105).",
+      "stap": "Op dag 22 om 04:15 ging het schild van poort oost drie minuten open van binnenuit, terwijl de buitenzegels intact bleven.",
+      "regel": "Intacte zegels betekenen dat er niet van buitenaf is doorgebroken.",
       "bewijs": [
-        "ENG-026",
         "GUA-043",
-        "GUA-103",
-        "GUA-104",
+        "GUA-044",
+        "GUA-105"
+      ]
+    },
+    {
+      "stap": "De stilstand en doorvoerfouten van dag 10 en dag 22 vallen in dezelfde gleuf als de verschoven maat.",
+      "regel": "Symptomen in de gleuf 04:15 tot 04:50 volgen op de verschoven maat in dezelfde nachten.",
+      "bewijs": [
+        "HIS-035",
+        "ENG-107",
+        "ENG-026",
+        "BEA-046",
+        "BEA-047"
+      ]
+    }
+  ],
+  "dwaalsporen": [
+    {
+      "bewering": "De conjunctie van de Wachtsterren veroorzaakt de zware nachten, en dag 33 wordt de zwaarste.",
+      "van": "oracle",
+      "waarom": "De Oracle trok dit zelf in: de conjunctie viel op dag 33 zonder zware nacht, en de zware nachten begonnen al op dag 10.",
+      "bewijs": [
+        "ORA-121",
+        "ORA-133",
+        "ORA-110"
+      ]
+    },
+    {
+      "bewering": "Hackers achter poort oost veroorzaakten de pakketverliezen van dag 22.",
+      "van": "engineer",
+      "waarom": "De Engineer trok dit zelf in: er staat geen steun voor in zijn records, en de bres kwam van binnenuit terwijl de buitenzegels intact bleven.",
+      "bewijs": [
+        "ENG-110",
+        "GUA-043",
         "GUA-044"
       ]
     },
     {
-      "stap": "De hulpslag stond nog aan op dag 38, dus de oorzaak werkte nog door na de eerste twee storingen.",
-      "regel": "Op dag 38 meldde de engineer dat de hulpslag zijn werk doet (ENG-113). Hij heeft geen uitschakeling vastgelegd (ENG-113, ENG-065).",
+      "bewering": "Er is zeker een infiltrant binnen de muur.",
+      "van": "guardian_keeper",
+      "waarom": "De Guardian Keeper noemde dit zelf een overtuiging; de bres was van binnenuit, en er is niemand buiten de muur gezien.",
       "bewijs": [
-        "ENG-113"
+        "GUA-116",
+        "GUA-043",
+        "GUA-044"
+      ]
+    },
+    {
+      "bewering": "Het datanet vervuilt de leylijnen.",
+      "van": "archmage",
+      "waarom": "De Archmage had geen meting van de oorzaak, en de lijnen lagen op dag 21, 28 en 35 binnen de marge terwijl het datanet al op eigen pols liep.",
+      "bewijs": [
+        "ARC-109",
+        "ARC-112",
+        "ARC-029",
+        "ARC-070"
+      ]
+    },
+    {
+      "bewering": "De polsversterking van 5% verklaart de bres van dag 22.",
+      "van": "engineer",
+      "waarom": "De versterking was op dag 24, na dag 22, en de Engineer corrigeerde dit zelf.",
+      "bewijs": [
+        "ENG-029",
+        "ENG-062",
+        "ENG-026"
+      ]
+    },
+    {
+      "bewering": "De afwijkende tijdstempels zijn slordigheid van de klerken.",
+      "van": "historian",
+      "waarom": "Volgens de regel is vastgelegd_op altijd gelijk aan gebeurd_op, en de Historian heeft dit zelf als onzorgvuldig erkend.",
+      "bewijs": [
+        "HIS-103",
+        "HIS-053",
+        "HIS-112",
+        "HIS-116"
       ]
     }
   ],
   "vertrouwen": {
-    "score": 45,
-    "reden": "De keten van hulpslag naar tijdstempelstoring en schildopeningen past in tijd en in de regels van de bouwakte en het schildartikel. De zwakste schakel is dat geen enkel record de hulpslag direct aan een tijdstempelfout koppelt, dat de stokking op 04:45 op één record rust, en dat de koppeling van artikel 3 aan de hulpslag geen Raadslid bevestigde."
+    "score": 35,
+    "reden": "De ingreep en de symptomen zijn goed gedocumenteerd, maar de schakel tussen de verschoven maat en het venster 04:15 tot 04:50 is niet gemeten. De vierdaagse cyclus heeft geen bevestigde regel in de bronnen, en de hogerhand blijft onbenoemd."
   },
   "voorspelling": {
-    "dag": 34,
-    "bewering": "Zonder ingrijpen slaat de Desync opnieuw toe op dag 34, want de twee desync-momenten op dag 10 en dag 22 liggen 12 dagen uit elkaar (22 + (22 − 10) = 34). Dit is een extrapolatie uit twee momenten, en de hulpslag blijft de oorzaak zolang hij aan staat.",
+    "dag": 46,
+    "bewering": "Als niemand ingrijpt, slaat de Desync op dag 46 rond 04:15 tot 04:45 opnieuw toe. De zware nachten komen om de vier dagen terug, van dag 10 tot en met dag 42, en 42 plus 4 is 46.",
     "bewijs": [
-      "HIS-035",
-      "ENG-107",
-      "ENG-026",
-      "GUA-043",
-      "ENG-113"
+      "ORA-110",
+      "ORA-142"
     ]
   }
 }
