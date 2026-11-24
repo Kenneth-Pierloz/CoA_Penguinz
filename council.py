@@ -265,7 +265,7 @@ async def run():
     print("\nDe Raadsleden en de Koning geven elkaar scores...")
     klein_scores = Koning(BEURTENBUDGET, model="MODEL_KLEIN")
     try:
-        trace["scores"] = await asyncio.to_thread(geef_scores, beurten, leden, koning, klein_scores)
+        trace["scores"] = await asyncio.to_thread(geef_scores, beurten, leden, koning, klein_scores, verdict)
         verbruik["scores"] = klein_scores.verbruik
         for rol, s in sorted(trace["scores"]["gemiddelden"].items(), key=lambda x: -x[1]["score"]):
             print(f"  {rol}: {s['score']}/10 ({s['aantal']} stemmen)")

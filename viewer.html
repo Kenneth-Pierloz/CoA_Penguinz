@@ -78,6 +78,7 @@
   #invloed .merk { stroke: var(--paneel); stroke-width: 2; }
   #invloed g.as:hover .merk { r: 7; }
   .dwaal { border-left: 3px solid var(--kleur); padding: 2px 0 2px 8px; margin: 6px 0; overflow-wrap: anywhere; }
+  .stem .fout { color: var(--fout); font-weight: 600; }
   .badge { font-weight: 650; color: var(--kleur); }
   .melding { padding: 40px 16px; text-align: center; color: var(--zacht); }
 </style>
@@ -205,7 +206,7 @@ function render(trace, verdict) {
     document.getElementById("scores").innerHTML = rij.map(([r, g]) =>
       `<details class="score" style="--kleur:${kleur(r)}"><summary title="Toon de feedback"><span class="stip"></span><span>${esc(NAMEN[r] || r)}</span><span class="spoor"><span style="width:${Math.max(0, Math.min(100, Number(g.score) * 10 || 0))}%"></span></span><b class="punt">${esc(punt(g.score))}</b></summary>`
       + (sco.stemmen || []).filter(s => s.aan === r).map(s =>
-        `<div class="stem"><b style="color:${kleur(s.van)}">${esc(NAMEN[s.van] || s.van)}</b> gaf ${esc(s.score)}: ${opmaak(s.feedback)}</div>`).join("")
+        `<div class="stem"><b style="color:${kleur(s.van)}">${esc(NAMEN[s.van] || s.van)}</b> gaf ${esc(s.score)}: ${opmaak(s.feedback)}${(s.fouten || []).map(f => `<br><span class="fout">Fout:</span> ${opmaak(f)}`).join("")}</div>`).join("")
       + `</details>`).join("")
       + `<div class="getal">Gemiddelde op 10 van de andere Raadsleden en de Koning. Klik voor de feedback.${zonder ? " Geen geldige stem van: " + esc(zonder) + "." : ""}</div>`;
   }

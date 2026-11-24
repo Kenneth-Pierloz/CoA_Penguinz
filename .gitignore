@@ -5,3 +5,5 @@ __pycache__/
 *.log
 kennisbronnen/*/
 runs/
+/trace.json
+/verdict.json
